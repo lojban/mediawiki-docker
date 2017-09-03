@@ -1,0 +1,5 @@
+# Contains secrets
+DO_NOT_CHECK_IN/
+# Contains user-generated and script-generated data; the former is potentially
+# private, the latter we can regenerate
+data/
