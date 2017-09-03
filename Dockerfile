@@ -1,4 +1,4 @@
-FROM kristophjunge/mediawiki:1.29
+FROM kristophjunge/mediawiki:$MW_VERSION
 
 RUN apt-get install -y wget
 
