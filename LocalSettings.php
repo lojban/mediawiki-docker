@@ -58,7 +58,7 @@ $wgDBtype           = "mysql";
 $wgDBserver         = "morji";
 $wgDBname           = "mediawiki";
 $wgDBuser           = "mediawiki";
-$wgDBpassword       = "***REMOVED***";
+$wgDBpassword       = "--PASSWORD--";
 
 # MySQL specific settings
 $wgDBprefix         = "";
@@ -154,11 +154,15 @@ $wgCapitalLinkOverrides [828] = true;
 //$wgFooterIcons = array();//removes icons in the footer
 ##Combating bulky interface for non-logged-in users
 //$wgDefaultUserOptions ['editsection'] = false;//hide the section edit links for users who are not logged in
-require_once ("$IP/extensions/HideVariousTabsFromUnauthorizedUsers/HideVariousTabsFromUnauthorizedUsers.php");
-$wgHVTFUUviewsToRemove = array( 'edit', 'history', 'read', 'talk', 'view', 'viewsource', 'wikEdLogoList', 'wikEdLogoImg', 'wikEdLogo','purge' );
+
+// No longer works with MW 1.28 - rlpowell
+// require_once ("$IP/extensions/HideVariousTabsFromUnauthorizedUsers/HideVariousTabsFromUnauthorizedUsers.php");
+// $wgHVTFUUviewsToRemove = array( 'edit', 'history', 'read', 'talk', 'view', 'viewsource', 'wikEdLogoList', 'wikEdLogoImg', 'wikEdLogo','purge' );
+
 ##Sidebar customizations
-require_once( "$IP/extensions/customnavblocks/CustomNavBlocks.php" );
-$wgCustomNavBlocksEnable = true;
+// No longer works with MW 1.28 - rlpowell
+// require_once( "$IP/extensions/CustomNavBlocks/CustomNavBlocks.php" );
+// $wgCustomNavBlocksEnable = true;
 
 // DISABLED PER https://github.com/lojban/lmw/issues/1
 //require_once("$IP/extensions/CSS/CSS.php");
@@ -191,7 +195,8 @@ $Line = false;
 require_once "$IP/extensions/WikiArticleFeeds/WikiArticleFeeds.php";
 require_once "$IP/extensions/MobileFrontend/MobileFrontend.php";
 
-require_once "$IP/extensions/Mantle/Mantle.php";
+// No longer works with MW 1.28 - rlpowell
+//require_once "$IP/extensions/Mantle/Mantle.php";
 
 $wgMFAutodetectMobileView = true;
 
@@ -263,10 +268,13 @@ require_once("$IP/extensions/UploadLocal/UploadLocal.php");
 $wgUploadLocalDirectory = $IP . '/files';
 
 # NEWS
-require_once( "$IP/extensions/RSS/RSS.php" );
+wfLoadExtension( 'RSS' );
 $wgRSSUrlWhitelist = array( '*' );
 $wgRSSAllowLinkTag=true;
-require_once( "$IP/extensions/RandomText/random.php" );
+
+// No longer works with MW 1.28 - rlpowell
+// require_once( "$IP/extensions/RandomText/random.php" );
+
 //require_once("$IP/extensions/News/News.php");
 
 // DISABLED PER https://github.com/lojban/lmw/issues/1
