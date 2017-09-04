@@ -58,7 +58,7 @@ $wgDBtype           = "mysql";
 $wgDBserver         = "morji";
 $wgDBname           = "mediawiki";
 $wgDBuser           = "mediawiki";
-$wgDBpassword       = "--PASSWORD--";
+$wgDBpassword       = "--mysql PASSWORD--";
 
 # MySQL specific settings
 $wgDBprefix         = "";
@@ -98,11 +98,11 @@ $wgShellLocale = "en_US.utf8";
 # Site language code, should be one of the list in ./languages/Names.php
 $wgLanguageCode = "en";
 
-$wgSecretKey = "***REMOVED***";
+$wgSecretKey = "--wgsecret PASSWORD--";
 
 # Site upgrade key. Must be set to a string (default provided) to turn on the
 # web installer while LocalSettings.php is in place
-$wgUpgradeKey = '***REMOVED***';
+// $wgUpgradeKey = '';
 
 ## Default skin: you can change the default skin. Use the internal symbolic
 ## names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook', 'vector':
@@ -216,7 +216,7 @@ require_once("$IP/extensions/Cite/Cite.php");
 require_once( "$IP/extensions/ParserFunctions/ParserFunctions.php" );
 $wgPFEnableStringFunctions = true;
 require_once( "$IP/extensions/Variables/Variables.php" );
-require_once "$IP/extensions/DynamicPageList/DynamicPageList.php";
+wfLoadExtension( 'DynamicPageList' );
 // require_once("$IP/extensions/SimpleTable/SimpleTable.php");//only version 1.2 (not later!!!) works
 //enableSemantics('mw.lojban.org');
 //include_once( "$IP/extensions/SemanticForms/SemanticForms.php" );
@@ -327,26 +327,6 @@ $wgFlowOccupyNamespaces = array( NS_USER_TALK );
 // but 'Mibbit' can be used for other networks.
 // $wgWebChatClient = 'freenodeChat';
 
-##TogetherJS 
-//require_once("$IP/extensions/TogetherJS/TogetherJS.php");//was not easily localizable
-// Enable the EtherEditor extension
-/*require_once( "$IP/extensions/EtherEditor/EtherEditor.php" );
- 
-$wgEtherpadConfig = array(
-	// the API host, for cookies (should be accessible by your users)
-	'apiHost' => 'localhost',
-	// the API host for the backend (usually localhost)
-	'apiBackend' => 'localhost',
-	// the API port (because it's often 9001)
-	'apiPort' => '9001',
-	// the API root path (usually just '/api'
-	'apiUrl' => '/api',
-	// the pad root path (usually just '/p')
-	'pUrl' => '/p',
-	// the API key, found in APIKEY.txt in your etherpad lite instance directory
-	'apiKey' => '***REMOVED***',
-);*/
-
 
 #Editor
 //require_once( "$IP/extensions/CharInsert/CharInsert.php" );
@@ -430,30 +410,6 @@ $wgGoogleAdSenseHeight = 600;
 */
 
 
-# SPAM
-/*require_once( "$IP/extensions/StopForumSpam/StopForumSpam.php" );
-$wgSFSAPIKey = '***REMOVED***';
-$wgSFSIPListLocation = '';*/
-/*require_once("$IP/extensions/ConfirmEdit/ConfirmEdit.php");
-$wgEmailConfirmToEdit=true;
-require_once "$IP/extensions/ConfirmEdit/FancyCaptcha.php";
-$wgCaptchaClass = 'FancyCaptcha';
-$wgCaptchaDirectory = '$IP/files';
-
-$wgGroupPermissions['*'            ]['skipcaptcha'] = false;
-$wgGroupPermissions['user'         ]['skipcaptcha'] = true;
-$wgGroupPermissions['autoconfirmed']['skipcaptcha'] = true;
-$wgGroupPermissions['bot'          ]['skipcaptcha'] = true; // registered bots
-$wgGroupPermissions['sysop'        ]['skipcaptcha'] = true;
-
-
-$wgCaptchaTriggers['edit'] = false;
-//$wgCaptchaTriggersOnNamespace[NS_TRANSLATIONS]['edit'] = false;
-$wgCaptchaTriggers['create']        = false; 
-$wgCaptchaTriggers['addurl']        = false; 
-$wgCaptchaTriggers['createaccount'] = true;
-$wgCaptchaTriggers['badlogin']      = true;*/
-
 //$wgGroupPermissions['*']['edit'] = false;//must be disabled by  HideVariousTabsFromUnauthorizedUsers extension
 $wgGroupPermissions['user']['edit'] = true;
 $wgGroupPermissions['sysop']['edit'] = true;
@@ -477,67 +433,12 @@ $wgConfirmAccountRequestFormItems = array(
         'TermsOfService'  => array( 'enabled' => false ),
 );
 ##delete accounts
-require_once "$IP/extensions/UserMerge/UserMerge.php";
+wfLoadExtension( 'UserMerge' );
 // By default nobody can use this function, enable for bureaucrat?
 $wgGroupPermissions['bureaucrat']['usermerge'] = true;
 // optional: default is array( 'sysop' )
 $wgUserMergeProtectedGroups = array();
 
-
-# SOCIAL NETWORKS INTEGRATION
-##GoogleLogin
-/*require_once "$IP/extensions/GoogleLogin/GoogleLogin.php";
-$wgGLSecret = '***REMOVED***';
-$wgGLAppId = '***REMOVED***';
-$wgGLAllowAccountCreation=true;
-$wgGLShowKeepLogin=false;*/
-
-##Extension:Facebook. a fork
-/*require_once "$IP/extensions/facebook-mediawiki/Facebook/Facebook.php";
-$wgFbAppId  = '***REMOVED***';
-$wgFbSecret = '***REMOVED***';
-$wgFbNamespace      = 'mivitke';*/
-
-##Extension:Twitter
-/*include_once("$IP/extensions/TwitterLogin/TwitterLogin.php");
-$wgConsumerKey = '***REMOVED***';
-$wgConsumerSecret = '***REMOVED***';*/
-
-
-
-
-#Notify of changes
-//require_once("$IP/extensions/scripts/ircnotify.php");
-# require_once("$IP/extensions/TweetANew/TweetANew.php");
-# $wgTweetANewTwitter['ConsumerKey'] = '***REMOVED***';
-# $wgTweetANewTwitter['ConsumerSecret'] = '***REMOVED***';
-# $wgTweetANewTwitter['AccessToken'] = '***REMOVED***';
-# $wgTweetANewTwitter['AccessTokenSecret'] = '***REMOVED***';
-# $wgTweetANewTweet = array(
-# 	'New' => false,
-# 	'Edit' => false,
-# 	'LessMinutesOld' => 1440,
-# 	'SkipMinor' => true,
-# );
- 
-# $wgTweetANewText = array(
-# 	'Minor' => false, // Only applies if $wgTweetANewTweet['SkipMinor'] = false
-# 	'MinorSpace' => true, // Only applies if $wgTweetANewTweet['SkipMinor'] = false and $wgTweetANewTweet['Minor'] = true
-# 	'NewRandom' => false,
-# 	'NewRandomMax' => 3,
-# 	'NewAuthor' => true,
-# 	'NewSummary' => true,
-# 	'EditRandom' => false,
-# 	'EditRandomMax' => 3,
-# 	'EditAuthor' => true,
-# 	'EditSummary' => true,
-# 	'RealName' => false,
-# );
- 
-# $wgTweetANewEditpage = array(
-# 	'Enable' => true, // Only applies if $wgTweetANewTweet['New'] = false or $wgTweetANewTweet['Edit'] = false
-# 	'Checked' => true, // Only applies if $wgTweetANewEditpage['Enable'] = true
-# );
 
 #GOOGLE ANALYTICS
 /*require_once "$IP/extensions/googleAnalytics/googleAnalytics.php";
@@ -549,7 +450,7 @@ $wgGoogleAnalyticsIgnoreBots = true;
 //$wgGoogleAnalyticsIgnoreUsers=true;//only for modified extension
 // If you use AdSense as well and have linked your accounts, set this to true to enable tracking
 $wgGoogleAnalyticsAddASAC = false;*/
-require_once "$IP/extensions/UniversalAnalyticsIntegration/UniversalAnalyticsIntegration.php";
+// require_once "$IP/extensions/UniversalAnalyticsIntegration/UniversalAnalyticsIntegration.php";
 // Google Universal Analytics account id (e.g. "UA-12345678-1")
 $wgGoogleAnalyticsAccount = "UA-45171210-1";
 // HTML code for other web analytics (can be used along with Google Universal Analytics)
