@@ -55,9 +55,9 @@ $wgEmailAuthentication = true;
 
 ## Database settings
 $wgDBtype           = "mysql";
-$wgDBserver         = "192.168.123.135";
+$wgDBserver         = "lojban_mediawiki_db--TEST--";
 $wgDBname           = "mediawiki";
-$wgDBuser           = "mediawiki";
+$wgDBuser           = "root";
 $wgDBpassword       = "--mysql PASSWORD--";
 
 # MySQL specific settings

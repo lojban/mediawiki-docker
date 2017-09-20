@@ -1,0 +1,14 @@
+ARG DB_VERSION=999
+FROM mariadb:${DB_VERSION}
+
+ENV MYSQL_ROOT_PASSWORD=--mysql PASSWORD--
+
+# Convert the built-in uid/gid (999) to something that matches the external
+# user running the container
+ARG DB_USERID
+ARG DB_GROUPID
+
+RUN find / -xdev -user mysql -print0 | xargs -0 chown ${DB_USERID}
+RUN find / -xdev -group mysql -print0 | xargs -0 chgrp ${DB_GROUPID}
+RUN usermod -u ${DB_USERID} mysql
+RUN groupmod -g ${DB_GROUPID} mysql

@@ -6,6 +6,12 @@ then
 	echo "Must give a prefix, like 'mysql', as first argument."
 	exit 1
 fi
+target="$2"
+if [ ! "$target" ]
+then
+	echo "Must give a target file, like 'LocalSettings.php', as second argument."
+	exit 1
+fi
 file="DO_NOT_CHECK_IN/${prefix}_password.txt"
 if [ ! -r $file ]
 then
@@ -13,9 +19,9 @@ then
 	exit 1
 fi
 
-if [ ! -f data/LocalSettings.php ]
+if [ ! -f data/$target ]
 then
-	cp LocalSettings.php.in data/LocalSettings.php
+	cp $target.in data/$target
 fi
 
-sed -i "s/--$prefix PASSWORD--/$(cat $file)/" data/LocalSettings.php
+sed -i "s/--$prefix PASSWORD--/$(cat $file)/" data/$target

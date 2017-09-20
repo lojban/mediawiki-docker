@@ -7,11 +7,53 @@ then
 	test="_test"
 fi
 
-port=11080
 if [ "$test" ]
 then
-	port=11081
+	echo "Copying data to test folders."
+	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/db/ /srv/lojban/mediawiki-docker/data/db$test/
+	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/files/ /srv/lojban/mediawiki-docker/data/files$test/
+	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/images/ /srv/lojban/mediawiki-docker/data/files$test/
 fi
+
+web_port=11080
+if [ "$test" ]
+then
+	web_port=11081
+fi
+db_port=11336
+if [ "$test" ]
+then
+	db_port=11337
+fi
+
+# our sub-version number; used to force rebuilds
+ITERATION=1
+
+#************
+# Build database
+#************
+DB_VERSION=10.2
+rm data/Dockerfile.db
+./insert_password.sh mysql Dockerfile.db
+sudo docker build -t lojban/mediawiki_db:$DB_VERSION-$ITERATION \
+	--build-arg=DB_USERID=$(id -u) --build-arg=DB_GROUPID=$(id -g) \
+	-f data/Dockerfile.db \
+	--build-arg DB_VERSION=$DB_VERSION .
+sudo docker kill lojban_mediawiki_db${test}
+sudo docker rm lojban_mediawiki_db${test}
+sudo docker rm /lojban_mediawiki_db${test}
+
+echo
+echo "Listening on db_port $db_port"
+echo
+
+sudo docker run --name lojban_mediawiki_db${test} -p $db_port:3306 \
+	-v /srv/lojban/mediawiki-docker/data/db${test}:/var/lib/mysql \
+	-d lojban/mediawiki_db:$DB_VERSION-$ITERATION
+
+#************
+# Build website
+#************
 
 # Check for a non-privleged user
 UNUSED_USERID=999
@@ -29,26 +71,37 @@ fi
 
 # mediawiki version
 MW_VERSION=1.29
-# our sub-version number
-ITERATION=1
 
-sudo docker build --build-arg=MW_VERSION=$MW_VERSION --build-arg=MW_USERID=$(id -u) --build-arg=MW_GROUPID=$(id -g) --build-arg=UNUSED_USERID=$UNUSED_USERID --build-arg=UNUSED_GROUPID=$UNUSED_GROUPID -t lojban/mediawiki:$MW_VERSION-$ITERATION .
-sudo docker kill lojban_mediawiki${test}
-sudo docker rm lojban_mediawiki${test}
-sudo docker rm /lojban_mediawiki${test}
+sudo docker build --build-arg=MW_VERSION=$MW_VERSION \
+	--build-arg=MW_USERID=$(id -u) --build-arg=MW_GROUPID=$(id -g) \
+	--build-arg=UNUSED_USERID=$UNUSED_USERID \
+	--build-arg=UNUSED_GROUPID=$UNUSED_GROUPID \
+	-t lojban/mediawiki_web:$MW_VERSION-$ITERATION \
+	-f Dockerfile.web .
+sudo docker kill lojban_mediawiki_web${test}
+sudo docker rm lojban_mediawiki_web${test}
+sudo docker rm /lojban_mediawiki_web${test}
 
 ./fix_selinux.sh
-rm /srv/lojban/mediawiki-docker/data/LocalSettings.php
-./insert_password.sh mysql
-./insert_password.sh wgsecret
+rm data/LocalSettings$test.php
+cp LocalSettings.php.in data/LocalSettings$test.php
+./insert_password.sh mysql LocalSettings$test.php
+./insert_password.sh wgsecret LocalSettings$test.php
+sed -i "s/--TEST--/$test/g" data/LocalSettings$test.php
 if [ "$test" ]
 then
-	./test_mode.sh
+	sed -i 's;mw.lojban.org;test-mw.lojban.org;' data/LocalSettings$test.php
+	sed -i 's;https://test-mw.lojban.org;http://test-mw.lojban.org;' data/LocalSettings$test.php
 fi
 
 echo
-echo "Listening on port $port"
+echo "Listening on web_port $web_port"
 echo
 
-sudo docker run --name lojban_mediawiki${test} -p $port:80 -v /srv/lojban/mediawiki-docker/data/LocalSettings.php:/var/www/mediawiki/LocalSettings.php -v /srv/lojban/mediawiki-docker/data/images:/var/www/mediawiki/images -v /srv/lojban/mediawiki-docker/data/files:/var/www/mediawiki/files  -d lojban/mediawiki:$MW_VERSION-$ITERATION
-sudo docker exec -it lojban_mediawiki${test} /script/update.sh
+sudo docker run --name lojban_mediawiki_web${test} -p $web_port:80 \
+	-v /srv/lojban/mediawiki-docker/data/LocalSettings$test.php:/var/www/mediawiki/LocalSettings.php \
+	-v /srv/lojban/mediawiki-docker/data/images$test:/var/www/mediawiki/images \
+	-v /srv/lojban/mediawiki-docker/data/files$test:/var/www/mediawiki/files  \
+	--link lojban_mediawiki_db$test:mysql \
+	-d lojban/mediawiki_web:$MW_VERSION-$ITERATION
+sudo docker exec -it lojban_mediawiki_web${test} /script/update.sh
