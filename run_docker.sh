@@ -12,7 +12,7 @@ then
 	echo "Copying data to test folders."
 	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/db/ /srv/lojban/mediawiki-docker/data/db$test/
 	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/files/ /srv/lojban/mediawiki-docker/data/files$test/
-	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/images/ /srv/lojban/mediawiki-docker/data/files$test/
+	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/images/ /srv/lojban/mediawiki-docker/data/images$test/
 fi
 
 web_port=11080
