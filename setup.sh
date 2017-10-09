@@ -8,3 +8,6 @@ systemctl --user enable lojban_mediawiki_db
 systemctl --user start lojban_mediawiki_db
 systemctl --user enable lojban_mediawiki_web
 systemctl --user start lojban_mediawiki_web
+
+# Set up backups
+cat crontab | crontab -

@@ -55,5 +55,7 @@ echo "Running db docker, which will listen on db_port $db_port"
 echo
 
 sudo docker run --name lojban_mediawiki_db${test} -p $db_port:3306 \
+	--log-driver syslog --log-opt tag=lojban_mw_db \
 	-v /srv/lojban/mediawiki-docker/data/db${test}:/var/lib/mysql \
+	-v /srv/lojban/mediawiki-docker/data/backups${test}:/srv/backups \
 	-i $hasterm lojban/mediawiki_db:$DB_VERSION-$ITERATION
