@@ -25,10 +25,13 @@ work, email webmaster@lojban.org or find rlpowell in #lojban on freenode irc.
 How To Restart The Server
 -------------------------
 
-	$ ./run_docker.sh
+	$ systemctl --user restart lojban_mediawiki_web
 
-That's it.  That will rip down both the database and web containers and restart
-them.
+That restarts only the web container.  If the DB container is running OK (you can check
+with "systemctl --user status"), you should probably leave it alone, but if you really
+want to restart it:
+
+	$ systemctl --user restart lojban_mediawiki_db
 
 How To Test Changes
 -------------------
@@ -36,7 +39,11 @@ How To Test Changes
 Make whatever changes you want, typically to Dockerfile.web or
 LocalSettings.php.in , and run:
 
-	$ ./run_docker.sh -t
+	$ ./run_database.sh -t
+
+And then, in another window, run:
+
+	$ run_web.sh -t
 
 This will copy all the data (including the database, so it takes a while) to
 the test instance space, and launch a pair of containers to run your changes.
@@ -56,6 +63,19 @@ LocalSettings you add:
 then your installation had better have created a directory named Foo/ ,
 and not Foo-1.2/ or foo/
 
+How To Show What Should Be Running
+----------------------------------
+
+	$ systemctl --user list-unit-files | grep enabled
+	lojban_mediawiki_db.service  enabled
+	lojban_mediawiki_web.service enabled
+
+How To Show What Is Actually Running
+------------------------------------
+
+FIXME: do
+systemctl --user status
+
 How To Interact With The Instances Directly
 -------------------------------------------
 
@@ -67,7 +87,10 @@ appropriate for other instances.
 How To See Instance Logs
 ------------------------
 
-	$ sudo docker logs lojban_mediawiki_web
+	$ journalctl -f -t lojban_mw_web
 
-This will give you the logs on the production web instance; modify as
-appropriate for other instances.
+This will give you the logs on the production web instance; the database is "db" instead
+of "web".
+
+For test instances, use the run scripts directly, and then the logs will simply be printed
+into your terminal.

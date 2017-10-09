@@ -1,5 +1,11 @@
 #!/bin/bash
 
+exec 2>&1
+set -e
+set -x
+
+./kill_web.sh "$@"
+
 test=""
 # Test mode
 if [ "$1" = "-t" ]
@@ -9,8 +15,7 @@ fi
 
 if [ "$test" ]
 then
-	echo "Copying data to test folders."
-	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/db/ /srv/lojban/mediawiki-docker/data/db$test/
+	echo "Copying web data to test folders."
 	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/files/ /srv/lojban/mediawiki-docker/data/files$test/
 	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/images/ /srv/lojban/mediawiki-docker/data/images$test/
 fi
@@ -20,36 +25,16 @@ if [ "$test" ]
 then
 	web_port=11081
 fi
-db_port=11336
-if [ "$test" ]
-then
-	db_port=11337
-fi
 
 # our sub-version number; used to force rebuilds
 ITERATION=1
 
-#************
-# Build database
-#************
-DB_VERSION=10.2
-rm data/Dockerfile.db
-./insert_password.sh mysql Dockerfile.db
-sudo docker build -t lojban/mediawiki_db:$DB_VERSION-$ITERATION \
-	--build-arg=DB_USERID=$(id -u) --build-arg=DB_GROUPID=$(id -g) \
-	-f data/Dockerfile.db \
-	--build-arg DB_VERSION=$DB_VERSION .
-sudo docker kill lojban_mediawiki_db${test}
-sudo docker rm lojban_mediawiki_db${test}
-sudo docker rm /lojban_mediawiki_db${test}
-
-echo
-echo "Listening on db_port $db_port"
-echo
-
-sudo docker run --name lojban_mediawiki_db${test} -p $db_port:3306 \
-	-v /srv/lojban/mediawiki-docker/data/db${test}:/var/lib/mysql \
-	-d lojban/mediawiki_db:$DB_VERSION-$ITERATION
+# Ask for a tty if that makes sense
+hasterm=''
+if tty -s
+then
+	hasterm='-t'
+fi
 
 #************
 # Build website
@@ -72,15 +57,20 @@ fi
 # mediawiki version
 MW_VERSION=1.29
 
+echo
+echo "Building website docker."
+echo
+
 sudo docker build --build-arg=MW_VERSION=$MW_VERSION \
 	--build-arg=MW_USERID=$(id -u) --build-arg=MW_GROUPID=$(id -g) \
 	--build-arg=UNUSED_USERID=$UNUSED_USERID \
 	--build-arg=UNUSED_GROUPID=$UNUSED_GROUPID \
 	-t lojban/mediawiki_web:$MW_VERSION-$ITERATION \
 	-f Dockerfile.web .
-sudo docker kill lojban_mediawiki_web${test}
-sudo docker rm lojban_mediawiki_web${test}
-sudo docker rm /lojban_mediawiki_web${test}
+
+echo
+echo "Setting up config files and the like."
+echo
 
 ./fix_selinux.sh
 rm data/LocalSettings$test.php
@@ -95,13 +85,13 @@ then
 fi
 
 echo
-echo "Listening on web_port $web_port"
+echo "Launching website docker, which will listen on web_port $web_port"
 echo
 
 sudo docker run --name lojban_mediawiki_web${test} -p $web_port:80 \
+	--log-driver syslog --log-opt tag=lojban_mw_web \
 	-v /srv/lojban/mediawiki-docker/data/LocalSettings$test.php:/var/www/mediawiki/LocalSettings.php \
 	-v /srv/lojban/mediawiki-docker/data/images$test:/var/www/mediawiki/images \
 	-v /srv/lojban/mediawiki-docker/data/files$test:/var/www/mediawiki/files  \
 	--link lojban_mediawiki_db$test:mysql \
-	-d lojban/mediawiki_web:$MW_VERSION-$ITERATION
-sudo docker exec -it lojban_mediawiki_web${test} /script/update.sh
+	-i $hasterm lojban/mediawiki_web:$MW_VERSION-$ITERATION

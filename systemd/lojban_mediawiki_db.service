@@ -1,0 +1,17 @@
+[Unit]
+Description=Database for mw.lojban.org
+# Requires=docker.service
+# After=docker.service
+
+[Service]
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lojban_mw_database
+WorkingDirectory=/home/sampre_mw/mediawiki
+ExecStart=/bin/bash -x /home/sampre_mw/mediawiki/run_database.sh 2>&1
+ExecStop=/bin/bash -x /home/sampre_mw/mediawiki/kill_database.sh 2>&1
+TimeoutStartSec=10min
+
+[Install]
+WantedBy=default.target

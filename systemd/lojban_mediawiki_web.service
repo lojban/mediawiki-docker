@@ -1,0 +1,17 @@
+[Unit]
+Description=Site/Webserver for mw.lojban.org
+Requires=lojban_mediawiki_db.service
+# After=docker.service
+
+[Service]
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lojban_mw_web
+WorkingDirectory=/home/sampre_mw/mediawiki
+ExecStart=/bin/bash -x /home/sampre_mw/mediawiki/run_web.sh 2>&1
+ExecStop=/bin/bash -x /home/sampre_mw/mediawiki/kill_web.sh 2>&1
+TimeoutStartSec=10min
+
+[Install]
+WantedBy=default.target
