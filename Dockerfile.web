@@ -55,7 +55,7 @@ RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/TweetANew-R
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/PdfExport-REL1_29-1f97d77.tar.gz ; tar -xf PdfExport-REL1_29-1f97d77.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Babel-REL1_29-faf4229.tar.gz ; tar -xf Babel-REL1_29-faf4229.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/cldr-REL1_29-45d6963.tar.gz ; tar -xf cldr-REL1_29-45d6963.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Translate-REL1_29-396125a.tar.gz ; tar -xf Translate-REL1_29-396125a.tar.gz
+RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Translate-REL1_29-ca20163.tar.gz ; tar -xf Translate-REL1_29-ca20163.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/UniversalLanguageSelector-REL1_29-9a49722.tar.gz ; tar -xf UniversalLanguageSelector-REL1_29-9a49722.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Quiz-REL1_29-38d21e3.tar.gz ; tar -xf Quiz-REL1_29-38d21e3.tar.gz
 RUN cd extensions ; wget https://github.com/HydraWiki/mediawiki-embedvideo/archive/v2.7.0.zip -O EmbedVideo-v2.7.0.zip ; unzip EmbedVideo-v2.7.0.zip ; ln -s EmbedVideo-v2.7.0.zip EmbedVideo
