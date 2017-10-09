@@ -29,6 +29,9 @@ RUN chown -R ${MW_USERID}:${MW_GROUPID} /var/www/mediawiki/images /var/www/media
 # Fix an explicit use of the bad userid
 RUN sed -i "s/999:999/${MW_USERID}:${MW_GROUPID}/" /docker-entrypoint.sh
 
+# Add a run of the update script each time we start the system
+RUN sed -ri '5s;^;/script/update.sh\n;' /docker-entrypoint.sh 
+
 # Install Extensions
 WORKDIR /var/www/mediawiki/
 RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
@@ -56,4 +59,5 @@ RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Translate-R
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/UniversalLanguageSelector-REL1_29-9a49722.tar.gz ; tar -xf UniversalLanguageSelector-REL1_29-9a49722.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Quiz-REL1_29-38d21e3.tar.gz ; tar -xf Quiz-REL1_29-38d21e3.tar.gz
 RUN cd extensions ; wget https://github.com/HydraWiki/mediawiki-embedvideo/archive/v2.7.0.zip -O EmbedVideo-v2.7.0.zip ; unzip EmbedVideo-v2.7.0.zip ; ln -s EmbedVideo-v2.7.0.zip EmbedVideo
-RUN cd skins ; wget https://github.com/wikimedia/mediawiki-skins-Metrolook/archive/f2ec55b5929784d3aa9262c551db66777d33c32a.tar.gz -O Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a.tgz ; tar -xvf Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a.tgz ; ln -s mediawiki-skins-Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a Metrolook
+RUN cd skins ; wget https://github.com/wikimedia/mediawiki-skins-Metrolook/archive/f2ec55b5929784d3aa9262c551db66777d33c32a.tar.gz -O Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a.tgz ; tar -xf Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a.tgz ; ln -s mediawiki-skins-Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a Metrolook
+RUN cd skins ; wget https://extdist.wmflabs.org/dist/skins/Vector-REL1_29-380951d.tar.gz ; tar -xf Vector-REL1_29-380951d.tar.gz

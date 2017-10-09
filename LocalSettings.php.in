@@ -160,9 +160,8 @@ $wgCapitalLinkOverrides [828] = true;
 // $wgHVTFUUviewsToRemove = array( 'edit', 'history', 'read', 'talk', 'view', 'viewsource', 'wikEdLogoList', 'wikEdLogoImg', 'wikEdLogo','purge' );
 
 ##Sidebar customizations
-// No longer works with MW 1.28 - rlpowell
-// require_once( "$IP/extensions/CustomNavBlocks/CustomNavBlocks.php" );
-// $wgCustomNavBlocksEnable = true;
+require_once( "$IP/extensions/CustomNavBlocks/CustomNavBlocks.php" );
+$wgCustomNavBlocksEnable = true;
 
 // DISABLED PER https://github.com/lojban/lmw/issues/1
 //require_once("$IP/extensions/CSS/CSS.php");
@@ -185,6 +184,11 @@ $DownArrow = false;
 $Logoshow = false;
 $UploadButton = false;
 $Line = false;
+
+// Vector skin
+wfLoadSkin( 'Vector' );
+$wgVectorUseSimpleSearch = true;
+$wgVectorUseIconWatch = true;
 
 // DISABLED PER https://github.com/lojban/lmw/issues/1
 //require_once "$IP/skins/Vector/Vector.php";
