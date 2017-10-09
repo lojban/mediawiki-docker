@@ -1,4 +1,3 @@
 #!/bin/bash
 
-chcon -t home_bin_t insert_password.sh run_docker.sh fix_selinux.sh test_mode.sh
-# chcon -R -t httpd_user_rw_content_t data/
+chcon -t home_bin_t fix_selinux.sh insert_password.sh kill_database.sh kill_web.sh run_database.sh run_web.sh setup.sh
