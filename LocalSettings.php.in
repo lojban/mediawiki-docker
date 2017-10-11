@@ -46,6 +46,15 @@ $wgLogo             = "$wgScriptPath/extensions/wiki.png";
 $wgEnableEmail      = true;
 $wgEnableUserEmail  = true; # UPO
 
+$wgSMTP = array(
+ 'host'     => "mail.lojban.org", // could also be an IP address. Where the SMTP server is located
+ 'IDHost'   => "lojban.org",      // Generally this will be the domain name of your website (aka mywiki.org)
+ 'port'     => 25,                 // Port to use when connecting to the SMTP server
+ 'auth'     => false,               // Should we use SMTP authentication (true or false)
+ 'username' => "",     // Username to use for SMTP authentication (if being used)
+ 'password' => ""       // Password to use for SMTP authentication (if being used)
+);
+
 $wgEmergencyContact = "webmaster@lojban.org";
 $wgPasswordSender   = "webmaster@lojban.org";
 
