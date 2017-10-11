@@ -423,7 +423,7 @@ $wgGoogleAdSenseHeight = 600;
 */
 
 
-//$wgGroupPermissions['*']['edit'] = false;//must be disabled by  HideVariousTabsFromUnauthorizedUsers extension
+$wgGroupPermissions['*']['edit'] = false;
 $wgGroupPermissions['user']['edit'] = true;
 $wgGroupPermissions['sysop']['edit'] = true;
 $wgGroupPermissions['*']['create'] = false;
