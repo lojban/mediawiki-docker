@@ -6,6 +6,8 @@ set -x
 
 ./kill_web.sh "$@"
 
+./build_web.sh "$@"
+
 test=""
 # Test mode
 if [ "$1" = "-t" ]
@@ -27,6 +29,7 @@ then
 fi
 
 # our sub-version number; used to force rebuilds
+# MUST change this both here and in build_web.sh
 ITERATION=1
 
 # Ask for a tty if that makes sense
@@ -35,38 +38,6 @@ if tty -s
 then
 	hasterm='-t'
 fi
-
-#************
-# Build website
-#************
-
-# Check for a non-privleged user
-UNUSED_USERID=999
-if id $UNUSED_USERID >/dev/null 2>&1
-then
-	echo "userid $UNUSED_USERID is in use, but we need one that is not."
-	exit 1
-fi
-UNUSED_GROUPID=999
-if id -g $UNUSED_GROUPID >/dev/null 2>&1
-then
-	echo "userid $UNUSED_GROUPID is in use, but we need one that is not."
-	exit 1
-fi
-
-# mediawiki version
-MW_VERSION=1.29
-
-echo
-echo "Building website docker."
-echo
-
-sudo docker build --build-arg=MW_VERSION=$MW_VERSION \
-	--build-arg=MW_USERID=$(id -u) --build-arg=MW_GROUPID=$(id -g) \
-	--build-arg=UNUSED_USERID=$UNUSED_USERID \
-	--build-arg=UNUSED_GROUPID=$UNUSED_GROUPID \
-	-t lojban/mediawiki_web:$MW_VERSION-$ITERATION \
-	-f Dockerfile.web .
 
 echo
 echo "Setting up config files and the like."

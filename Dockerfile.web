@@ -38,11 +38,16 @@ RUN sed -ri 's;^php_admin_value.error_log. \s*=.*;php_admin_value[error_log] = /
 # Symlink a PNG that an extension keeps asking for
 RUN ln -s /var/www/mediawiki/resources/assets/wiki.png  /var/www/mediawiki/extensions/wiki.png
 
+# Support mime types
+RUN cat /etc/nginx/nginx.conf
+RUN sed -ri 's!^\s*http \{\s*$!http {\n    include       /etc/nginx/mime.types;!' /etc/nginx/nginx.conf
+RUN cat /etc/nginx/nginx.conf
+
 # Install Extensions
 WORKDIR /var/www/mediawiki/
 RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/WikiArticleFeeds-REL1_29-8b12cb8.tar.gz ; tar -xf WikiArticleFeeds-REL1_29-8b12cb8.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/MobileFrontend-REL1_29-00fab28.tar.gz ; tar -xf MobileFrontend-REL1_29-00fab28.tar.gz
+RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/MobileFrontend-REL1_29-4f7aee1.tar.gz ; tar -xf MobileFrontend-REL1_29-4f7aee1.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Variables-REL1_29-7a95992.tar.gz ; tar -xf Variables-REL1_29-7a95992.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_29-f1a4d6c.tar.gz ; tar -xf Scribunto-REL1_29-f1a4d6c.tar.gz
 RUN cd extensions/Scribunto ; find . -type f -name lua | xargs chmod 755
@@ -67,3 +72,5 @@ RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Quiz-REL1_2
 RUN cd extensions ; wget https://github.com/HydraWiki/mediawiki-embedvideo/archive/v2.7.0.zip -O EmbedVideo-v2.7.0.zip ; unzip EmbedVideo-v2.7.0.zip ; ln -s EmbedVideo-v2.7.0.zip EmbedVideo
 RUN cd skins ; wget https://github.com/wikimedia/mediawiki-skins-Metrolook/archive/f2ec55b5929784d3aa9262c551db66777d33c32a.tar.gz -O Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a.tgz ; tar -xf Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a.tgz ; ln -s mediawiki-skins-Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a Metrolook
 RUN cd skins ; wget https://extdist.wmflabs.org/dist/skins/Vector-REL1_29-380951d.tar.gz ; tar -xf Vector-REL1_29-380951d.tar.gz
+COPY HideVariousTabsFromUnauthorizedUsers.php /tmp/
+RUN cd extensions ; mkdir HideVariousTabsFromUnauthorizedUsers ; cp /tmp/HideVariousTabsFromUnauthorizedUsers.php HideVariousTabsFromUnauthorizedUsers/HideVariousTabsFromUnauthorizedUsers.php
