@@ -32,6 +32,10 @@ fi
 # MUST change this both here and in build_web.sh
 ITERATION=1
 
+# mediawiki version
+# MUST change this both here and in build_web.sh
+MW_VERSION=1.29
+
 # Ask for a tty if that makes sense
 hasterm=''
 if tty -s
