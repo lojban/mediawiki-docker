@@ -38,10 +38,8 @@ RUN sed -ri 's;^php_admin_value.error_log. \s*=.*;php_admin_value[error_log] = /
 # Symlink a PNG that an extension keeps asking for
 RUN ln -s /var/www/mediawiki/resources/assets/wiki.png  /var/www/mediawiki/extensions/wiki.png
 
-# Support mime types
-RUN cat /etc/nginx/nginx.conf
-RUN sed -ri 's!^\s*http \{\s*$!http {\n    include       /etc/nginx/mime.types;!' /etc/nginx/nginx.conf
-RUN cat /etc/nginx/nginx.conf
+# Support mime types ; see https://github.com/kristophjunge/docker-mediawiki/issues/14
+RUN sed -ri 's!^\s*http \{\s*$!http {\n    include       /etc/nginx/mime.types;!' /etc/nginx/nginx-http.conf
 
 # Install Extensions
 WORKDIR /var/www/mediawiki/
