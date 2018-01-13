@@ -64,7 +64,6 @@ echo "Launching website docker, which will listen on web_port $web_port"
 echo
 
 sudo docker run --name lojban_mediawiki_web${test} -p $web_port:80 \
-	--log-driver syslog --log-opt tag=lojban_mw_web \
 	-v /srv/lojban/mediawiki-docker/data/LocalSettings$test.php:/var/www/mediawiki/LocalSettings.php \
 	-v /srv/lojban/mediawiki-docker/data/images$test:/var/www/mediawiki/images \
 	-v /srv/lojban/mediawiki-docker/data/files$test:/var/www/mediawiki/files  \
