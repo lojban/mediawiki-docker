@@ -41,6 +41,9 @@ RUN ln -s /var/www/mediawiki/resources/assets/wiki.png  /var/www/mediawiki/exten
 # Support mime types ; see https://github.com/kristophjunge/docker-mediawiki/issues/14
 RUN sed -ri 's!^\s*http \{\s*$!http {\n    include       /etc/nginx/mime.types;!' /etc/nginx/nginx-http.conf
 
+# Disable parsoid, as we're not using it
+RUN sed -ri '/program:parsoid/,/^\s*$/d' /etc/supervisor/conf.d/supervisord.conf
+
 # Install Extensions
 WORKDIR /var/www/mediawiki/
 RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
