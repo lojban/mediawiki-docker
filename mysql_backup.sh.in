@@ -30,9 +30,10 @@ fi
 mkdir -p /srv/backups/mysqldumps
 chmod 700 /srv/backups/mysqldumps
 cd /srv/backups/mysqldumps
+ls -l
 
 # Delete old backups
-find . -mtime +3 -exec rm {} +
+find . -type f | head -n -10 | xargs rm -f -v
 
 for database in $(mysql -N -B -e 'show databases;' | grep -v information_schema | grep -v performance_schema)
 do
@@ -40,7 +41,7 @@ do
 
   echo "Backing up MySQL database $database"
   /bin/rm -f $database.$DATESTR.gz
-  /usr/bin/mysqldump --opt --skip-triggers --add-drop-database \
+  /usr/bin/mysqldump --opt --single-transaction --skip-triggers --add-drop-database \
     --ignore-table=mediawiki.objectcache --ignore-table=mediawiki.copy_l10n_cache --ignore-table=mediawiki.l10n_cache \
     --databases $database | /bin/gzip --rsyncable -9 >$database.$DATESTR.gz
   echo "Done backing up MySQL database $database"
