@@ -432,7 +432,8 @@ $wgGroupPermissions['sysop']['create'] = true;
 ##confirm account:
 require_once "$IP/extensions/ConfirmAccount/ConfirmAccount.php";
 $wgGroupPermissions['user']['createaccount'] = true;
-$wgConfirmAccountContact = 'llg-members@lojban.org';                        
+$wgConfirmAccountContact = 'thelogicallanguagegroup@gmail.com';
+$wgGroupPermissions['bureaucrat']['confirmaccount-notify'] = true;
 $wgMakeUserPageFromBio = false;
 $wgAutoWelcomeNewUsers = false;
 $wgConfirmAccountRequestFormItems = array(
