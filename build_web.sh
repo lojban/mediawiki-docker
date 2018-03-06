@@ -33,7 +33,7 @@ then
 fi
 
 # mediawiki version
-MW_VERSION=1.29
+MW_VERSION=1.30
 
 echo
 echo "Building website docker."

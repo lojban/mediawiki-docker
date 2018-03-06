@@ -38,9 +38,6 @@ RUN sed -ri 's;^php_admin_value.error_log. \s*=.*;php_admin_value[error_log] = /
 # Symlink a PNG that an extension keeps asking for
 RUN ln -s /var/www/mediawiki/resources/assets/wiki.png  /var/www/mediawiki/extensions/wiki.png
 
-# Support mime types ; see https://github.com/kristophjunge/docker-mediawiki/issues/14
-RUN sed -ri 's!^\s*http \{\s*$!http {\n    include       /etc/nginx/mime.types;!' /etc/nginx/nginx-http.conf
-
 # Disable parsoid, as we're not using it
 RUN sed -ri '/program:parsoid/,/^\s*$/d' /etc/supervisor/conf.d/supervisord.conf
 
@@ -50,7 +47,7 @@ RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/WikiArticleFeeds-REL1_29-8b12cb8.tar.gz ; tar -xf WikiArticleFeeds-REL1_29-8b12cb8.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/MobileFrontend-REL1_29-4f7aee1.tar.gz ; tar -xf MobileFrontend-REL1_29-4f7aee1.tar.gz
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Variables-REL1_29-7a95992.tar.gz ; tar -xf Variables-REL1_29-7a95992.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_29-f1a4d6c.tar.gz ; tar -xf Scribunto-REL1_29-f1a4d6c.tar.gz
+RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_29-4328b32.tar.gz ; tar -xf Scribunto-REL1_29-4328b32.tar.gz
 RUN cd extensions/Scribunto ; find . -type f -name lua | xargs chmod 755
 RUN cd extensions ; wget https://github.com/jmnote/SimpleMathJax/archive/v0.6.1.tar.gz -O SimpleMathJax-v0.6.1.tar.gz ; tar -xf SimpleMathJax-v0.6.1.tar.gz ; ln -s SimpleMathJax-0.6.1 SimpleMathJax
 RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/UploadLocal-REL1_29-1278d90.tar.gz ; tar -xf UploadLocal-REL1_29-1278d90.tar.gz
