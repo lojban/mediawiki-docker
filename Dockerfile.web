@@ -41,35 +41,41 @@ RUN ln -s /var/www/mediawiki/resources/assets/wiki.png  /var/www/mediawiki/exten
 # Disable parsoid, as we're not using it
 RUN sed -ri '/program:parsoid/,/^\s*$/d' /etc/supervisor/conf.d/supervisord.conf
 
+# Need to grab the argument again because we're fater the FROM, I guess?
+ARG MW_VERSION=999
+
 # Install Extensions
 WORKDIR /var/www/mediawiki/
-RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/WikiArticleFeeds-REL1_29-8b12cb8.tar.gz ; tar -xf WikiArticleFeeds-REL1_29-8b12cb8.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/MobileFrontend-REL1_29-4f7aee1.tar.gz ; tar -xf MobileFrontend-REL1_29-4f7aee1.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Variables-REL1_29-7a95992.tar.gz ; tar -xf Variables-REL1_29-7a95992.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Scribunto-REL1_29-4328b32.tar.gz ; tar -xf Scribunto-REL1_29-4328b32.tar.gz
+COPY grab_extdist.sh /usr/local/bin/
+RUN /usr/local/bin/grab_extdist.sh WikiArticleFeeds ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh MobileFrontend ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Variables ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Scribunto ${MW_VERSION} 
 RUN cd extensions/Scribunto ; find . -type f -name lua | xargs chmod 755
-RUN cd extensions ; wget https://github.com/jmnote/SimpleMathJax/archive/v0.6.1.tar.gz -O SimpleMathJax-v0.6.1.tar.gz ; tar -xf SimpleMathJax-v0.6.1.tar.gz ; ln -s SimpleMathJax-0.6.1 SimpleMathJax
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/UploadLocal-REL1_29-1278d90.tar.gz ; tar -xf UploadLocal-REL1_29-1278d90.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/RSS-REL1_29-ec39acf.tar.gz ; tar -xf RSS-REL1_29-ec39acf.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/SocialProfile-REL1_29-a68a73a.tar.gz ; tar -xf SocialProfile-REL1_29-a68a73a.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Flow-REL1_29-5971110.tar.gz ; tar -xf Flow-REL1_29-5971110.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Echo-REL1_29-a3fd1af.tar.gz ; tar -xf Echo-REL1_29-a3fd1af.tar.gz
+RUN /usr/local/bin/grab_extdist.sh UploadLocal ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh RSS ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh SocialProfile ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Flow ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Echo ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Thanks ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh ReplaceText ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Widgets ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh ConfirmAccount ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh TweetANew ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh PdfExport ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Babel ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh cldr ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Translate ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh Quiz ${MW_VERSION} 
+RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
+RUN cd extensions ; wget https://github.com/jmnote/SimpleMathJax/archive/v0.7.1.tar.gz -O SimpleMathJax.tgz ; tar -xf SimpleMathJax.tgz ; ln -s SimpleMathJax-0.7.1 SimpleMathJax
 RUN cd extensions ; wget https://github.com/Alexia/DynamicPageList/archive/3.1.1.tar.gz -O DynamicPageList-3.1.1.tar.gz ; tar -xf DynamicPageList-3.1.1.tar.gz  ; ln -s DynamicPageList-3.1.1 DynamicPageList
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Thanks-REL1_29-2e4d32e.tar.gz ; tar -xf Thanks-REL1_29-2e4d32e.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/ReplaceText-REL1_29-b02d10f.tar.gz ; tar -xf ReplaceText-REL1_29-b02d10f.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Widgets-REL1_29-922fe0a.tar.gz ; tar -xf Widgets-REL1_29-922fe0a.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/ConfirmAccount-REL1_29-1e04d8c.tar.gz ; tar -xf ConfirmAccount-REL1_29-1e04d8c.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/TweetANew-REL1_29-6cd02b9.tar.gz ; tar -xf TweetANew-REL1_29-6cd02b9.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/PdfExport-REL1_29-1f97d77.tar.gz ; tar -xf PdfExport-REL1_29-1f97d77.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Babel-REL1_29-faf4229.tar.gz ; tar -xf Babel-REL1_29-faf4229.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/cldr-REL1_29-45d6963.tar.gz ; tar -xf cldr-REL1_29-45d6963.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Translate-REL1_29-ca20163.tar.gz ; tar -xf Translate-REL1_29-ca20163.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/UniversalLanguageSelector-REL1_29-9a49722.tar.gz ; tar -xf UniversalLanguageSelector-REL1_29-9a49722.tar.gz
-RUN cd extensions ; wget https://extdist.wmflabs.org/dist/extensions/Quiz-REL1_29-38d21e3.tar.gz ; tar -xf Quiz-REL1_29-38d21e3.tar.gz
-RUN cd extensions ; wget https://github.com/HydraWiki/mediawiki-embedvideo/archive/v2.7.0.zip -O EmbedVideo-v2.7.0.zip ; unzip EmbedVideo-v2.7.0.zip ; ln -s EmbedVideo-v2.7.0.zip EmbedVideo
-RUN cd skins ; wget https://github.com/wikimedia/mediawiki-skins-Metrolook/archive/f2ec55b5929784d3aa9262c551db66777d33c32a.tar.gz -O Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a.tgz ; tar -xf Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a.tgz ; ln -s mediawiki-skins-Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a Metrolook
-RUN cd skins ; wget https://extdist.wmflabs.org/dist/skins/Vector-REL1_29-380951d.tar.gz ; tar -xf Vector-REL1_29-380951d.tar.gz
+RUN cd extensions ; wget https://github.com/HydraWiki/mediawiki-embedvideo/archive/v2.7.1.zip -O EmbedVideo.zip ; unzip EmbedVideo.zip ; ln -s EmbedVideo.zip EmbedVideo
+
+# Install Skins
+RUN cd skins ; wget https://github.com/wikimedia/mediawiki-skins-Metrolook/archive/f2ec55b5929784d3aa9262c551db66777d33c32a.tar.gz -O Metrolook.tgz ; tar -xf Metrolook.tgz ; ln -s mediawiki-skins-Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a Metrolook
+RUN cd skins ; wget https://extdist.wmflabs.org/dist/skins/Vector-REL1_30-85a66bf.tar.gz -O Vector.tgz ; tar -xf Vector.tgz
 
 # We hacked this ourselves
 COPY HideVariousTabsFromUnauthorizedUsers.php /tmp/
