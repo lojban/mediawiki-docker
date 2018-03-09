@@ -422,6 +422,8 @@ $wgGoogleAdSenseWidth  = 120;
 $wgGoogleAdSenseHeight = 600;
 */
 
+// Needed for MobileFrontend
+$wgMFDefaultSkinClass = 'SkinVector'; 
 
 $wgGroupPermissions['*']['edit'] = false;
 $wgGroupPermissions['user']['edit'] = true;
