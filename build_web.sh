@@ -19,13 +19,13 @@ ITERATION=1
 #************
 
 # Check for a non-privleged user
-UNUSED_USERID=999
+UNUSED_USERID=998
 if id $UNUSED_USERID >/dev/null 2>&1
 then
 	echo "userid $UNUSED_USERID is in use, but we need one that is not."
 	exit 1
 fi
-UNUSED_GROUPID=999
+UNUSED_GROUPID=998
 if id -g $UNUSED_GROUPID >/dev/null 2>&1
 then
 	echo "userid $UNUSED_GROUPID is in use, but we need one that is not."
