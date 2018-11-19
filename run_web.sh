@@ -48,11 +48,9 @@ echo "Setting up config files and the like."
 echo
 
 ./fix_selinux.sh
-rm data/LocalSettings$test.php
-cp LocalSettings.php.in data/LocalSettings$test.php
-./insert_password.sh mysql LocalSettings$test.php
-./insert_password.sh wgsecret LocalSettings$test.php
-sed -i "s/--TEST--/$test/g" data/LocalSettings$test.php
+rm -f data/LocalSettings$test.php
+erb test=$test LocalSettings.php.erb >data/LocalSettings$test.php
+chmod --reference=LocalSettings.php.erb data/LocalSettings$test.php
 if [ "$test" ]
 then
 	sed -i 's;mw.lojban.org;test-mw.lojban.org;' data/LocalSettings$test.php

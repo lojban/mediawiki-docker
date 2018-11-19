@@ -43,12 +43,13 @@ echo "Building db docker."
 echo
 
 DB_VERSION=10.2
-rm data/Dockerfile.db
-./insert_password.sh mysql Dockerfile.db
-sudo docker build -t lojban/mediawiki_db:$DB_VERSION-$ITERATION \
-	--build-arg=DB_USERID=$(id -u) --build-arg=DB_GROUPID=$(id -g) \
-	-f data/Dockerfile.db \
-	--build-arg DB_VERSION=$DB_VERSION .
+rm -f data/Dockerfile.db
+erb db_version=$DB_VERSION \
+    db_userid=$(id -u) db_groupid=$(id -g) \
+    Dockerfile.db.erb >data/Dockerfile.db
+chmod --reference=Dockerfile.db.erb data/Dockerfile.db
+
+sudo docker build -t lojban/mediawiki_db:$DB_VERSION-$ITERATION -f data/Dockerfile.db .
 
 echo
 echo "Running db docker, which will listen on db_port $db_port"

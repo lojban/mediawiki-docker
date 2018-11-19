@@ -4,7 +4,7 @@
 # MySQL cleanup
 #********************
 
-export MYSQL_PWD='--mysql PASSWORD--'
+export MYSQL_PWD='<%= File.read('DO_NOT_CHECK_IN/mysql_password.txt').chomp %>'
 
 exec 2>&1
 set -e

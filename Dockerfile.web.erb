@@ -1,36 +1,30 @@
-ARG MW_VERSION=999
-FROM kristophjunge/mediawiki:${MW_VERSION}
+FROM kristophjunge/mediawiki:<%= mw_version %>
 
+RUN apt-get update
 RUN apt-get install -y wget
 
 # Convert the built-in uid/gid (999) to something that matches the external
 # user running the container
-ARG MW_USERID
-ARG MW_GROUPID
+RUN find / -xdev -user www-data -print0 | xargs -0 chown <%= mw_userid %>
+RUN find / -xdev -group www-data -print0 | xargs -0 chgrp <%= mw_groupid %>
+RUN usermod -u <%= mw_userid %> www-data
+RUN groupmod -g <%= mw_groupid %> www-data
 
-RUN find / -xdev -user www-data -print0 | xargs -0 chown ${MW_USERID}
-RUN find / -xdev -group www-data -print0 | xargs -0 chgrp ${MW_GROUPID}
-RUN usermod -u ${MW_USERID} www-data
-RUN groupmod -g ${MW_GROUPID} www-data
-
-ARG UNUSED_USERID
-ARG UNUSED_GROUPID
-
-RUN find / -xdev -user parsoid -print0 | xargs -0 chown ${UNUSED_USERID}
-RUN find / -xdev -group parsoid -print0 | xargs -0 chgrp ${UNUSED_GROUPID}
-RUN usermod -u ${UNUSED_USERID} parsoid
-RUN groupmod -g ${UNUSED_GROUPID} parsoid
+RUN find / -xdev -user parsoid -print0 | xargs -0 chown <%= unused_userid %>
+RUN find / -xdev -group parsoid -print0 | xargs -0 chgrp <%= unused_groupid %>
+RUN usermod -u <%= unused_userid %> parsoid
+RUN groupmod -g <%= unused_groupid %> parsoid
 
 # Prep directorios for cross mounting
 RUN rm -rf /var/www/mediawiki/images /var/www/mediawiki/files
 RUN mkdir -p /var/www/mediawiki/images /var/www/mediawiki/files
-RUN chown -R ${MW_USERID}:${MW_GROUPID} /var/www/mediawiki/images /var/www/mediawiki/files
+RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/www/mediawiki/images /var/www/mediawiki/files
 
 # Fix an explicit use of the bad userid
-RUN sed -i "s/999:999/${MW_USERID}:${MW_GROUPID}/" /docker-entrypoint.sh
+RUN sed -i "s/999:999/<%= mw_userid %>:<%= mw_groupid %>/" /docker-entrypoint.sh
 
 # Add a run of the update script each time we start the system
-RUN sed -ri '5s;^;/script/update.sh\n;' /docker-entrypoint.sh 
+RUN sed -ri '5s;^;/script/update.sh\n;' /docker-entrypoint.sh
 
 # Show errors on the server logs
 RUN sed -ri 's;^php_admin_value.error_log. \s*=.*;php_admin_value[error_log] = /proc/self/fd/2;' /usr/local/etc/php-fpm.conf
@@ -41,33 +35,30 @@ RUN ln -s /var/www/mediawiki/resources/assets/wiki.png  /var/www/mediawiki/exten
 # Disable parsoid, as we're not using it
 RUN sed -ri '/program:parsoid/,/^\s*$/d' /etc/supervisor/conf.d/supervisord.conf
 
-# Need to grab the argument again because we're fater the FROM, I guess?
-ARG MW_VERSION=999
-
 # Install Extensions
 WORKDIR /var/www/mediawiki/
 COPY grab_extdist.sh /usr/local/bin/
-RUN /usr/local/bin/grab_extdist.sh WikiArticleFeeds ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh MobileFrontend ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Variables ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Scribunto ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh WikiArticleFeeds <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh MobileFrontend <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Variables <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Scribunto <%= mw_version %>
 RUN cd extensions/Scribunto ; find . -type f -name lua | xargs chmod 755
-RUN /usr/local/bin/grab_extdist.sh UploadLocal ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh RSS ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh SocialProfile ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Flow ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Echo ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Thanks ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh ReplaceText ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Widgets ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh ConfirmAccount ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh TweetANew ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh PdfExport ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Babel ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh cldr ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Translate ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector ${MW_VERSION} 
-RUN /usr/local/bin/grab_extdist.sh Quiz ${MW_VERSION} 
+RUN /usr/local/bin/grab_extdist.sh UploadLocal <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh RSS <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh SocialProfile <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Flow <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Echo <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Thanks <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh ReplaceText <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Widgets <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh ConfirmAccount <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh TweetANew <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh PdfExport <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Babel <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh cldr <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Translate <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh Quiz <%= mw_version %>
 RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
 RUN cd extensions ; wget https://github.com/jmnote/SimpleMathJax/archive/v0.7.1.tar.gz -O SimpleMathJax.tgz ; tar -xf SimpleMathJax.tgz ; ln -s SimpleMathJax-0.7.1 SimpleMathJax
 RUN cd extensions ; wget https://github.com/Alexia/DynamicPageList/archive/3.1.1.tar.gz -O DynamicPageList-3.1.1.tar.gz ; tar -xf DynamicPageList-3.1.1.tar.gz  ; ln -s DynamicPageList-3.1.1 DynamicPageList

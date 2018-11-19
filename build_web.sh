@@ -39,9 +39,11 @@ echo
 echo "Building website docker."
 echo
 
-sudo docker build --build-arg=MW_VERSION=$MW_VERSION \
-	--build-arg=MW_USERID=$(id -u) --build-arg=MW_GROUPID=$(id -g) \
-	--build-arg=UNUSED_USERID=$UNUSED_USERID \
-	--build-arg=UNUSED_GROUPID=$UNUSED_GROUPID \
-	-t lojban/mediawiki_web:$MW_VERSION-$ITERATION \
-	-f Dockerfile.web .
+rm -f data/Dockerfile.web
+erb mw_version=$MW_VERSION \
+    mw_userid=$(id -u) mw_groupid=$(id -g) \
+    unused_userid=$UNUSED_USERID unused_groupid=$UNUSED_GROUPID \
+    Dockerfile.web.erb >data/Dockerfile.web
+chmod --reference=Dockerfile.web.erb data/Dockerfile.web
+
+sudo docker build -t lojban/mediawiki_web:$MW_VERSION-$ITERATION -f data/Dockerfile.web .
