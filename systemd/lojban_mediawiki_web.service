@@ -1,7 +1,6 @@
 [Unit]
 Description=Site/Webserver for mw.lojban.org
-Requires=lojban_mediawiki_db.service
-# After=docker.service
+# this can't work because user units can't reference system units: After=docker.service
 
 [Service]
 Restart=always
