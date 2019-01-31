@@ -67,7 +67,3 @@ RUN cd extensions ; wget https://github.com/HydraWiki/mediawiki-embedvideo/archi
 # Install Skins
 RUN cd skins ; wget https://github.com/wikimedia/mediawiki-skins-Metrolook/archive/f2ec55b5929784d3aa9262c551db66777d33c32a.tar.gz -O Metrolook.tgz ; tar -xf Metrolook.tgz ; ln -s mediawiki-skins-Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a Metrolook
 RUN cd skins ; wget https://extdist.wmflabs.org/dist/skins/Vector-REL1_30-85a66bf.tar.gz -O Vector.tgz ; tar -xf Vector.tgz
-
-# We hacked this ourselves
-COPY HideVariousTabsFromUnauthorizedUsers.php /tmp/
-RUN cd extensions ; mkdir HideVariousTabsFromUnauthorizedUsers ; cp /tmp/HideVariousTabsFromUnauthorizedUsers.php HideVariousTabsFromUnauthorizedUsers/HideVariousTabsFromUnauthorizedUsers.php
