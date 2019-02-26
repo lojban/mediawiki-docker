@@ -4,6 +4,9 @@ exec 2>&1
 set -e
 set -x
 
+CONTAINER_BIN=${CONTAINER_BIN:-$(which podman)}
+CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
+
 ./kill_web.sh "$@"
 
 ./build_web.sh "$@"
@@ -18,14 +21,8 @@ fi
 if [ "$test" ]
 then
 	echo "Copying web data to test folders."
-	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/files/ /srv/lojban/mediawiki-docker/data/files$test/
-	rsync -aHAX --delete /srv/lojban/mediawiki-docker/data/images/ /srv/lojban/mediawiki-docker/data/images$test/
-fi
-
-web_port=11080
-if [ "$test" ]
-then
-	web_port=11081
+	rsync -aHAX --delete /srv/lojban/mediawiki-container/data/files/  /srv/lojban/mediawiki-container/data/files$test/
+	rsync -aHAX --delete /srv/lojban/mediawiki-container/data/images/ /srv/lojban/mediawiki-container/data/images$test/
 fi
 
 # our sub-version number; used to force rebuilds
@@ -58,12 +55,12 @@ then
 fi
 
 echo
-echo "Launching website docker, which will listen on web_port $web_port"
+echo "Launching website container, which will listen on whatever port the database container defined."
 echo
 
-sudo docker run --name lojban_mediawiki_web${test} -p $web_port:8080 \
-	-v /srv/lojban/mediawiki-docker/data/LocalSettings$test.php:/var/www/mediawiki/LocalSettings.php \
-	-v /srv/lojban/mediawiki-docker/data/images$test:/var/www/mediawiki/images \
-	-v /srv/lojban/mediawiki-docker/data/files$test:/var/www/mediawiki/files  \
-	--link lojban_mediawiki_db$test:mysql \
+sudo $CONTAINER_BIN run --name lojban_mediawiki_web${test} \
+	-v /srv/lojban/mediawiki-container/data/LocalSettings$test.php:/var/www/mediawiki/LocalSettings.php \
+	-v /srv/lojban/mediawiki-container/data/images$test:/var/www/mediawiki/images \
+	-v /srv/lojban/mediawiki-container/data/files$test:/var/www/mediawiki/files  \
+	--network=container:lojban_mediawiki_db \
 	-i $hasterm lojban/mediawiki_web:$MW_VERSION-$ITERATION

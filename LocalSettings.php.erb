@@ -64,7 +64,7 @@ $wgEmailAuthentication = true;
 
 ## Database settings
 $wgDBtype           = "mysql";
-$wgDBserver         = "lojban_mediawiki_db<%= test %>";
+$wgDBserver         = "127.0.0.1";  # Not 'localhost'; that will try to do a socket connection, instead of TCP
 $wgDBname           = "mediawiki";
 $wgDBuser           = "root";
 $wgDBpassword       = "<%= File.read('DO_NOT_CHECK_IN/mysql_password.txt').chomp %>";

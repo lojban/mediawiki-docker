@@ -1,6 +1,5 @@
 [Unit]
 Description=Database for mw.lojban.org
-# this can't work because user units can't reference system units: After=docker.service
 
 [Service]
 Restart=always

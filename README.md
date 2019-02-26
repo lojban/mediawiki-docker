@@ -2,7 +2,7 @@ Lojban Mediawiki Server
 =======================
 
 This repo cotnains the code used to run the Lojban Mediawiki Server, which runs
-inside a pair of Docker containers.
+inside a pair of Docker/Podman containers.
 
 This repo by itself won't get you a running system because it doesn't describe
 the database.  It's assumed that you're using this along with the data stored
@@ -79,10 +79,13 @@ systemctl --user status
 How To Interact With The Instances Directly
 -------------------------------------------
 
-	$ sudo docker exec -it lojban_mediawiki_web bash
+	$ sudo docker/podman exec -it lojban_mediawiki_web bash
 
 This will give you a shell on the production web instance; modify as
 appropriate for other instances.
+
+(The system prefers podman if it's present; you can check what it actually ran
+as with "sudo podman ps" or "sudo docker ps".)
 
 How To See Instance Logs
 ------------------------

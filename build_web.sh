@@ -4,6 +4,9 @@ exec 2>&1
 set -e
 set -x
 
+CONTAINER_BIN=${CONTAINER_BIN:-$(which podman)}
+CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
+
 test=""
 # Test mode
 if [ "$1" = "-t" ]
@@ -36,7 +39,7 @@ fi
 MW_VERSION=1.30
 
 echo
-echo "Building website docker."
+echo "Building website container."
 echo
 
 rm -f data/Dockerfile.web
@@ -46,4 +49,4 @@ erb mw_version=$MW_VERSION \
     Dockerfile.web.erb >data/Dockerfile.web
 chmod --reference=Dockerfile.web.erb data/Dockerfile.web
 
-sudo docker build -t lojban/mediawiki_web:$MW_VERSION-$ITERATION -f data/Dockerfile.web .
+sudo $CONTAINER_BIN build -t lojban/mediawiki_web:$MW_VERSION-$ITERATION -f data/Dockerfile.web .
