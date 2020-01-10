@@ -49,4 +49,4 @@ erb mw_version=$MW_VERSION \
     Dockerfile.web.erb >data/Dockerfile.web
 chmod --reference=Dockerfile.web.erb data/Dockerfile.web
 
-sudo $CONTAINER_BIN build -t lojban/mediawiki_web:$MW_VERSION-$ITERATION -f data/Dockerfile.web .
+$CONTAINER_BIN build -t lojban/mediawiki_web:$MW_VERSION-$ITERATION -f data/Dockerfile.web .

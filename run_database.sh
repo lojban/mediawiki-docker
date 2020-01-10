@@ -24,12 +24,6 @@ then
 	rsync -aHAX --delete /srv/lojban/mediawiki-container/data/db/ /srv/lojban/mediawiki-container/data/db$test/
 fi
 
-db_port=11336
-if [ "$test" ]
-then
-	db_port=11337
-fi
-
 # This has nothing to do with this container, but the other container shares
 # our networking stack, so...
 web_port=11080
@@ -62,14 +56,16 @@ erb db_version=$DB_VERSION \
     Dockerfile.db.erb >data/Dockerfile.db
 chmod --reference=Dockerfile.db.erb data/Dockerfile.db
 
-sudo $CONTAINER_BIN build -t lojban/mediawiki_db:$DB_VERSION-$ITERATION -f data/Dockerfile.db .
+$CONTAINER_BIN build -t lojban/mediawiki_db:$DB_VERSION-$ITERATION -f data/Dockerfile.db .
+
+$CONTAINER_BIN pod rm -f lojban_mediawiki || true
+$CONTAINER_BIN pod create --share=net,uts,ipc -n lojban_mediawiki -p $web_port:8080
 
 echo
-echo "Running db container, which will listen on db_port $db_port ; the associated web container will listen on $web_port."
+echo "Running db container; the associated web container will listen on $web_port."
 echo
 
-sudo $CONTAINER_BIN run --name lojban_mediawiki_db${test} \
-	-p $web_port:8080 \
+$CONTAINER_BIN run --pod lojban_mediawiki --user $(id -u):$(id -g) --name lojban_mediawiki_db${test} \
 	-v /srv/lojban/mediawiki-container/data/db${test}:/var/lib/mysql \
 	-v /srv/lojban/mediawiki-container/data/backups${test}:/srv/backups \
 	-i $hasterm lojban/mediawiki_db:$DB_VERSION-$ITERATION $general_log

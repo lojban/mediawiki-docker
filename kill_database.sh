@@ -15,8 +15,8 @@ then
 	test="_test"
 fi
 
-sudo $CONTAINER_BIN stop --time=30 lojban_mediawiki_db${test}
-sudo $CONTAINER_BIN kill lojban_mediawiki_db${test}
-sudo $CONTAINER_BIN rm lojban_mediawiki_db${test}
+$CONTAINER_BIN stop --time=30 lojban_mediawiki_db${test}
+$CONTAINER_BIN kill lojban_mediawiki_db${test}
+$CONTAINER_BIN rm lojban_mediawiki_db${test}
 
 exit 0

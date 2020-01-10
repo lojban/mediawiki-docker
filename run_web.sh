@@ -25,6 +25,12 @@ then
 	rsync -aHAX --delete /srv/lojban/mediawiki-container/data/images/ /srv/lojban/mediawiki-container/data/images$test/
 fi
 
+web_port=11080
+if [ "$test" ]
+then
+	web_port=11081
+fi
+
 # our sub-version number; used to force rebuilds
 # MUST change this both here and in build_web.sh
 ITERATION=1
@@ -55,12 +61,11 @@ then
 fi
 
 echo
-echo "Launching website container, which will listen on whatever port the database container defined."
+echo "Launching website container, which will listen on port $web_port."
 echo
 
-sudo $CONTAINER_BIN run --name lojban_mediawiki_web${test} \
+$CONTAINER_BIN run --pod lojban_mediawiki --user $(id -u):$(id -g) --name lojban_mediawiki_web${test} \
 	-v /srv/lojban/mediawiki-container/data/LocalSettings$test.php:/var/www/mediawiki/LocalSettings.php \
 	-v /srv/lojban/mediawiki-container/data/images$test:/var/www/mediawiki/images \
 	-v /srv/lojban/mediawiki-container/data/files$test:/var/www/mediawiki/files  \
-	--network=container:lojban_mediawiki_db \
-	-i $hasterm lojban/mediawiki_web:$MW_VERSION-$ITERATION
+	-it $hasterm lojban/mediawiki_web:$MW_VERSION-$ITERATION

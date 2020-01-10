@@ -67,3 +67,11 @@ RUN cd extensions ; wget https://github.com/HydraWiki/mediawiki-embedvideo/archi
 # Install Skins
 RUN cd skins ; wget https://github.com/wikimedia/mediawiki-skins-Metrolook/archive/f2ec55b5929784d3aa9262c551db66777d33c32a.tar.gz -O Metrolook.tgz ; tar -xf Metrolook.tgz ; ln -s mediawiki-skins-Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a Metrolook
 RUN cd skins ; wget https://extdist.wmflabs.org/dist/skins/Vector-REL1_30-85a66bf.tar.gz -O Vector.tgz ; tar -xf Vector.tgz
+
+RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/run /var/lib/nginx /usr/local/etc /run /dev/stderr /dev/stdin  /dev/stdout /data /images
+RUN apt-get update
+RUN apt-get install sudo
+RUN echo 'www-data    ALL=(ALL)   NOPASSWD: ALL' >>/etc/sudoers
+RUN cat /etc/sudoers
+RUN apt-get -y install mariadb-client
+RUN apt-get -y install netcat
