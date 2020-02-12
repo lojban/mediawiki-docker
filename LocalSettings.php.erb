@@ -31,8 +31,13 @@ $wgArticlePath = "/papri/$1";
 //$wgArticlePath = "/wiki/$1";  # Virtual path. This directory MUST be different from the one used in $wgScriptPath
 
 ## The protocol and server name to use in fully-qualified URLs
+<%- if test.length > 1 -%>
+$wgServer           = "http://mw-test.lojban.org";
+$wgCanonicalServer  = "http://mw-test.lojban.org";
+<%- else -%>
 $wgServer           = "https://mw.lojban.org";
 $wgCanonicalServer  = "https://mw.lojban.org";
+<%- end -%>
 
 ## The relative URL path to the skins directory
 $wgStylePath        = "$wgScriptPath/skins";
@@ -64,7 +69,8 @@ $wgEmailAuthentication = true;
 
 ## Database settings
 $wgDBtype           = "mysql";
-$wgDBserver         = "127.0.0.1";  # Not 'localhost'; that will try to do a socket connection, instead of TCP
+# See run_database.sh for why we're talking to jukni
+$wgDBserver         = "jukni:<%= test ? 11037 : 11036 %>";  # Not 'localhost'; that will try to do a socket connection, instead of TCP
 $wgDBname           = "mediawiki";
 $wgDBuser           = "root";
 $wgDBpassword       = "<%= File.read('DO_NOT_CHECK_IN/mysql_password.txt').chomp %>";
@@ -164,31 +170,35 @@ $wgCapitalLinkOverrides [828] = true;
 ##Combating bulky interface for non-logged-in users
 //$wgDefaultUserOptions ['editsection'] = false;//hide the section edit links for users who are not logged in
 
-##Sidebar customizations
-require_once( "$IP/extensions/CustomNavBlocks/CustomNavBlocks.php" );
-$wgCustomNavBlocksEnable = true;
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## ##Sidebar customizations
+## require_once( "$IP/extensions/CustomNavBlocks/CustomNavBlocks.php" );
+## $wgCustomNavBlocksEnable = true;
 
 // DISABLED PER https://github.com/lojban/lmw/issues/1
 //require_once("$IP/extensions/CSS/CSS.php");
 
-# Skins. Mobile devices optimization:
-require_once "$IP/skins/Metrolook/Metrolook.php";
-// $wgDefaultUserOptions['skinmetrolook-collapsiblenav'] = 0;
-$wgMetrolookFeatures = array( 'collapsiblenav' => array('global' => false, 'user' => false ), );
-//$wgValidSkinNames['metrolook'] = 'Metrolook';
-//$SearchBar = false;
-$wgMetrolookLogo = false;
-$wgMetrolookUploadButton = false;
-$wgMetrolookDownArrow = false;
-$wgMetrolookLine = false;
-/*
-$wgMetrolookBartile = false;
-$wgMetrolookMobile = false;
-*/
-$DownArrow = false;
-$Logoshow = false;
-$UploadButton = false;
-$Line = false;
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## # Skins. Mobile devices optimization:
+## require_once "$IP/skins/Metrolook/Metrolook.php";
+## // $wgDefaultUserOptions['skinmetrolook-collapsiblenav'] = 0;
+## $wgMetrolookFeatures = array( 'collapsiblenav' => array('global' => false, 'user' => false ), );
+## //$wgValidSkinNames['metrolook'] = 'Metrolook';
+## //$SearchBar = false;
+## $wgMetrolookLogo = false;
+## $wgMetrolookUploadButton = false;
+## $wgMetrolookDownArrow = false;
+## $wgMetrolookLine = false;
+## /*
+## $wgMetrolookBartile = false;
+## $wgMetrolookMobile = false;
+## */
+## $DownArrow = false;
+## $Logoshow = false;
+## $UploadButton = false;
+## $Line = false;
 
 // Vector skin
 wfLoadSkin( 'Vector' );
@@ -201,8 +211,10 @@ $wgVectorUseIconWatch = true;
 //$wgVectorFeatures['collapsiblenav']['user'] = true;
 //$wgVectorFeatures['collapsibletabs']['global'] = true;
 
-require_once "$IP/extensions/WikiArticleFeeds/WikiArticleFeeds.php";
-require_once "$IP/extensions/MobileFrontend/MobileFrontend.php";
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## require_once "$IP/extensions/WikiArticleFeeds/WikiArticleFeeds.php";
+## require_once "$IP/extensions/MobileFrontend/MobileFrontend.php";
 
 // No longer works with MW 1.28 - rlpowell
 //require_once "$IP/extensions/Mantle/Mantle.php";
@@ -221,24 +233,27 @@ $wgDisableCounters = true;//Note: If you’re using caching, keeping counters on
 
 #SYNTAX EXTENDED
 //require_once( "$IP/extensions/Poem/Poem.php" );
-require_once("$IP/extensions/Cite/Cite.php");
-require_once( "$IP/extensions/ParserFunctions/ParserFunctions.php" );
+wfLoadExtension( 'Cite' );
+wfLoadExtension( 'ParserFunctions' );
 $wgPFEnableStringFunctions = true;
-require_once( "$IP/extensions/Variables/Variables.php" );
-wfLoadExtension( 'DynamicPageList' );
-// require_once("$IP/extensions/SimpleTable/SimpleTable.php");//only version 1.2 (not later!!!) works
-//enableSemantics('mw.lojban.org');
-//include_once( "$IP/extensions/SemanticForms/SemanticForms.php" );
-require_once "$IP/extensions/Scribunto/Scribunto.php";//Necessary for Infobox templates from Wikipedia
+wfLoadExtension( 'Variables' );
+wfLoadExtension( 'Scribunto' );
 $wgScribuntoDefaultEngine = 'luastandalone';
-require_once "$IP/extensions/SimpleMathJax/SimpleMathJax.php";
-#$wgSimpleMathJaxSize = 120;
-/** There is a bug in Extension:MathJax with MediaWiki 1.19.0, 1.20.0 and 1.21.1
-*   If you are using any form of PHP caching on your wiki and you have setup
-*   your wiki to use variable caching like $wgMainCacheType = CACHE_ACCEL; 
-*   you could encounter issues with rendering of formulas. 
-*   If so uncomment the last line.
-*/
+
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## wfLoadExtension( 'DynamicPageList' );
+## // require_once("$IP/extensions/SimpleTable/SimpleTable.php");//only version 1.2 (not later!!!) works
+## //enableSemantics('mw<%= test %>.lojban.org');
+## //include_once( "$IP/extensions/SemanticForms/SemanticForms.php" );
+## require_once "$IP/extensions/SimpleMathJax/SimpleMathJax.php";
+## #$wgSimpleMathJaxSize = 120;
+## /** There is a bug in Extension:MathJax with MediaWiki 1.19.0, 1.20.0 and 1.21.1
+## *   If you are using any form of PHP caching on your wiki and you have setup
+## *   your wiki to use variable caching like $wgMainCacheType = CACHE_ACCEL; 
+## *   you could encounter issues with rendering of formulas. 
+## *   If so uncomment the last line.
+## */
 
 # Robin's server alias
 ///combat alias mw.lojban.org that made you think you loggined from Robin's server
@@ -273,8 +288,11 @@ $wgDisableUploadScriptChecks = true;
 $wgEnableUploads= true;
 $wgGenerateThumbnailOnParse = true;//if false you will break thumbs
 $wgUploadDirectory = $IP . '/images/';
-require_once("$IP/extensions/UploadLocal/UploadLocal.php");
-$wgUploadLocalDirectory = $IP . '/files';
+
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## require_once("$IP/extensions/UploadLocal/UploadLocal.php");
+## $wgUploadLocalDirectory = $IP . '/files';
 
 # NEWS
 wfLoadExtension( 'RSS' );
@@ -300,13 +318,15 @@ $wgRSSAllowLinkTag=true;
 //$wgGroupPermissions['*']['wikiforum-admin'] = false;
 //$wgGroupPermissions['user']['wikiforum-moderator'] = true;
 
-require_once("$IP/extensions/SocialProfile/SocialProfile.php");
-$wgUserProfileDisplay['friends'] = true;
-$wgUserProfileDisplay['foes'] = true;
-$wgUserBoard = true;
-$wgUserProfileDisplay['board'] = true;
-$wgUserProfileDisplay['stats'] = true;
-$wgFriendingEnabled = true;
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## require_once("$IP/extensions/SocialProfile/SocialProfile.php");
+## $wgUserProfileDisplay['friends'] = true;
+## $wgUserProfileDisplay['foes'] = true;
+## $wgUserBoard = true;
+## $wgUserProfileDisplay['board'] = true;
+## $wgUserProfileDisplay['stats'] = true;
+## $wgFriendingEnabled = true;
 
 ##Flow
 /*
@@ -385,38 +405,40 @@ $wgNamespacesToBeSearchedDefault = array(
 	NS_CATEGORY_TALK =>  true
 );
 
-# PAGE MANAGEMENT
-ini_set( 'max_input_vars', 3000);//for ReplaceText
-require_once( "$IP/extensions/ReplaceText/ReplaceText.php" );
-//require_once ( "$IP/extensions/MassEditRegex/MassEditRegex.php" );
-//$wgGroupPermissions['sysop']['masseditregex'] = true; // Allow administrators to use Special:MassEditRegex
-//$wgGroupPermissions['massedit']['masseditregex'] = true; // Create 'massedit' group where members can use Special:MassEditRegex without being sysops
-//require_once("$IP/extensions/DeleteOldRevisions2/DeleteOldRevisions2.php");//security issues with this extension
-
-// DISABLED PER https://github.com/lojban/lmw/issues/1
-//require_once("$IP/extensions/DeleteBatch/DeleteBatch.php");
-
-require_once("$IP/extensions/Renameuser/Renameuser.php");
-//include_once("$IP/extensions/AdminLinks/AdminLinks.php");
-//require_once("$IP/extensions/PageAttachment/SetupExtension.php");//Enable it back when it starts to support localisation
-
-
-#WIDGETS
-//$wgRawHtml = true; // very dangerous! please don't add the content unless it's of utter importance
-//require_once( "$IP/extensions/HTMLets/HTMLets.php" );
-//$wgHTMLetsDirectory = "$IP/htmlets";
-require_once("$IP/extensions/Widgets/Widgets.php");
-$wgGroupPermissions['user']['editwidgets'] = true;
-/*require_once( "$IP/extensions/GoogleAdSense/GoogleAdSense.php" );
-$wgGoogleAdSenseClient = 'ca-pub-1161714373457356';
-$wgGoogleAdSenseSlot = '7612993623';
-$wgGoogleAdSenseID = 'First for LMW';
-$wgGoogleAdSenseAnonOnly = true;
-// Width of the AdSense box, specified in your AdSense account
-$wgGoogleAdSenseWidth  = 120;
-// Height of the AdSense box, specified in your AdSense account
-$wgGoogleAdSenseHeight = 600;
-*/
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## # PAGE MANAGEMENT
+## ini_set( 'max_input_vars', 3000);//for ReplaceText
+## require_once( "$IP/extensions/ReplaceText/ReplaceText.php" );
+## //require_once ( "$IP/extensions/MassEditRegex/MassEditRegex.php" );
+## //$wgGroupPermissions['sysop']['masseditregex'] = true; // Allow administrators to use Special:MassEditRegex
+## //$wgGroupPermissions['massedit']['masseditregex'] = true; // Create 'massedit' group where members can use Special:MassEditRegex without being sysops
+## //require_once("$IP/extensions/DeleteOldRevisions2/DeleteOldRevisions2.php");//security issues with this extension
+## 
+## // DISABLED PER https://github.com/lojban/lmw/issues/1
+## //require_once("$IP/extensions/DeleteBatch/DeleteBatch.php");
+## 
+## require_once("$IP/extensions/Renameuser/Renameuser.php");
+## //include_once("$IP/extensions/AdminLinks/AdminLinks.php");
+## //require_once("$IP/extensions/PageAttachment/SetupExtension.php");//Enable it back when it starts to support localisation
+## 
+## 
+## #WIDGETS
+## //$wgRawHtml = true; // very dangerous! please don't add the content unless it's of utter importance
+## //require_once( "$IP/extensions/HTMLets/HTMLets.php" );
+## //$wgHTMLetsDirectory = "$IP/htmlets";
+## require_once("$IP/extensions/Widgets/Widgets.php");
+## $wgGroupPermissions['user']['editwidgets'] = true;
+## /*require_once( "$IP/extensions/GoogleAdSense/GoogleAdSense.php" );
+## $wgGoogleAdSenseClient = 'ca-pub-1161714373457356';
+## $wgGoogleAdSenseSlot = '7612993623';
+## $wgGoogleAdSenseID = 'First for LMW';
+## $wgGoogleAdSenseAnonOnly = true;
+## // Width of the AdSense box, specified in your AdSense account
+## $wgGoogleAdSenseWidth  = 120;
+## // Height of the AdSense box, specified in your AdSense account
+## $wgGoogleAdSenseHeight = 600;
+## */
 
 // Needed for MobileFrontend
 $wgMFDefaultSkinClass = 'SkinVector'; 
@@ -427,6 +449,7 @@ $wgGroupPermissions['sysop']['edit'] = true;
 $wgGroupPermissions['*']['create'] = false;
 $wgGroupPermissions['user']['create'] = true;
 $wgGroupPermissions['sysop']['create'] = true;
+
 ##confirm account:
 require_once "$IP/extensions/ConfirmAccount/ConfirmAccount.php";
 $wgGroupPermissions['user']['createaccount'] = true;
@@ -444,12 +467,15 @@ $wgConfirmAccountRequestFormItems = array(
         'Links'           => array( 'enabled' => false ),
         'TermsOfService'  => array( 'enabled' => false ),
 );
-##delete accounts
-wfLoadExtension( 'UserMerge' );
-// By default nobody can use this function, enable for bureaucrat?
-$wgGroupPermissions['bureaucrat']['usermerge'] = true;
-// optional: default is array( 'sysop' )
-$wgUserMergeProtectedGroups = array();
+
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## ##delete accounts
+## wfLoadExtension( 'UserMerge' );
+## // By default nobody can use this function, enable for bureaucrat?
+## $wgGroupPermissions['bureaucrat']['usermerge'] = true;
+## // optional: default is array( 'sysop' )
+## $wgUserMergeProtectedGroups = array();
 
 
 #GOOGLE ANALYTICS
@@ -521,37 +547,39 @@ include_once("$IP/extensions/DataTransfer/DataTransfer.php");
 $wgGroupPermissions['user']['datatransferimport'] = true;
 */
 
-#MULTILINGUAL WIKI
-$EXT = "$IP/extensions";
-$wgExtensionAssetsPath = "{$wgScriptPath}/../extensions";
-require_once( "$EXT/Babel/Babel.php" );
- 
-require_once( "$EXT/cldr/cldr.php" );
- 
-//require_once( "$EXT/CleanChanges/CleanChanges.php" );
-$wgCCTrailerFilter = true;
-$wgCCUserFilter = false;
-$wgDefaultUserOptions['usenewrc'] = 1;
- 
-require_once( "$EXT/LocalisationUpdate/LocalisationUpdate.php" );
-$wgLocalisationUpdateDirectory = "$IP/cache";
- 
-require_once( "$EXT/Translate/Translate.php" );
-$wgGroupPermissions['*']['translate'] = true;
-$wgGroupPermissions['*']['translate-messagereview'] = true;
-$wgGroupPermissions['*']['translate-groupreview'] = true;
-$wgGroupPermissions['*']['translate-import'] = true;
-$wgGroupPermissions['*']['pagetranslation'] = true;
-$wgGroupPermissions['*']['translate-manage'] = true;
-$wgTranslateDocumentationLanguageCode = 'qqq';
-$wgExtraLanguageNames['qqq'] = 'Message documentation'; # No linguistic content. Used for documenting messages
-
-require_once( "$EXT/UniversalLanguageSelector/UniversalLanguageSelector.php" );
-$wgLoginLanguageSelector=true;//must be important for saving the deteced language while tregistering. not tested
-$wgULSGeoService = true;
-$wgULSEnable =true;
-$wgULSAnonCanChangeLanguage = true;
-$wgULSPosition = 'none';
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## #MULTILINGUAL WIKI
+## $EXT = "$IP/extensions";
+## $wgExtensionAssetsPath = "{$wgScriptPath}/../extensions";
+## require_once( "$EXT/Babel/Babel.php" );
+##  
+## require_once( "$EXT/cldr/cldr.php" );
+##  
+## //require_once( "$EXT/CleanChanges/CleanChanges.php" );
+## $wgCCTrailerFilter = true;
+## $wgCCUserFilter = false;
+## $wgDefaultUserOptions['usenewrc'] = 1;
+##  
+## require_once( "$EXT/LocalisationUpdate/LocalisationUpdate.php" );
+## $wgLocalisationUpdateDirectory = "$IP/cache";
+##  
+## require_once( "$EXT/Translate/Translate.php" );
+## $wgGroupPermissions['*']['translate'] = true;
+## $wgGroupPermissions['*']['translate-messagereview'] = true;
+## $wgGroupPermissions['*']['translate-groupreview'] = true;
+## $wgGroupPermissions['*']['translate-import'] = true;
+## $wgGroupPermissions['*']['pagetranslation'] = true;
+## $wgGroupPermissions['*']['translate-manage'] = true;
+## $wgTranslateDocumentationLanguageCode = 'qqq';
+## $wgExtraLanguageNames['qqq'] = 'Message documentation'; # No linguistic content. Used for documenting messages
+## 
+## require_once( "$EXT/UniversalLanguageSelector/UniversalLanguageSelector.php" );
+## $wgLoginLanguageSelector=true;//must be important for saving the deteced language while tregistering. not tested
+## $wgULSGeoService = true;
+## $wgULSEnable = true;
+## $wgULSAnonCanChangeLanguage = false;
+## $wgULSPosition = 'none';
 
 //for autotranslating sidebar elements. I'd suggest simply using Mediaiwki: namespace pages instead.
 /*$wgTblePageTranslation = true;
@@ -563,18 +591,20 @@ function addSidebarMessageGroup( $id ) {
         return $mg;
 }*/
 
-#QUIZ
-require_once("$IP/extensions/Quiz/Quiz.php");
-$egMWQuizzerAdmins = array('WikiSysop');
-//!require_once('extensions/mediawikiquizzer/mediawikiquizzer.php');
-//!MediaWikiQuizzer::setupNamespace(104); // 104 - ????????? ?????? ???????????? ????
-#Poll/Voting
-//!require_once "$IP/extensions/AJAXPoll/AJAXPoll.php";
-//!require_once( "$IP/extensions/SecurePoll/SecurePoll.php" );
-//require_once( "$IP/extensions/QPoll/qp_user.php" );
-//!require_once "$IP/extensions/Poll/Poll.php";
-//require_once("$IP/extensions/BucketVoting/BucketVoting.php");
-//$wgBucketVoting_admingroup="sysop";
+## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
+## 
+## #QUIZ
+## require_once("$IP/extensions/Quiz/Quiz.php");
+## $egMWQuizzerAdmins = array('WikiSysop');
+## //!require_once('extensions/mediawikiquizzer/mediawikiquizzer.php');
+## //!MediaWikiQuizzer::setupNamespace(104); // 104 - ????????? ?????? ???????????? ????
+## #Poll/Voting
+## //!require_once "$IP/extensions/AJAXPoll/AJAXPoll.php";
+## //!require_once( "$IP/extensions/SecurePoll/SecurePoll.php" );
+## //require_once( "$IP/extensions/QPoll/qp_user.php" );
+## //!require_once "$IP/extensions/Poll/Poll.php";
+## //require_once("$IP/extensions/BucketVoting/BucketVoting.php");
+## //$wgBucketVoting_admingroup="sysop";
 
 # Debug LMW:
 /*
