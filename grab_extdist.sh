@@ -1,10 +1,13 @@
 #!/bin/bash
 
+set -e
+
 name="$1"
 version="$2"
 
-ext_dir='/var/www/mediawiki/extensions/'
 site='https://extdist.wmflabs.org/dist/extensions/'
+
+cd extensions/
 
 if [ ! "$name" -o ! "$version" ]
 then
@@ -18,8 +21,6 @@ then
     echo "Bad results found: $tarballname"
     exit 1
 fi
-
-cd $ext_dir
 
 wget "$site/$tarballname" -O "$tarballname"
 

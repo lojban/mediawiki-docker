@@ -7,8 +7,8 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=lojban_mw_web
 WorkingDirectory=/home/sampre_mw/mediawiki
-ExecStart=/bin/bash -x /home/sampre_mw/mediawiki/run_web.sh 2>&1
-ExecStop=/bin/bash -x /home/sampre_mw/mediawiki/kill_web.sh 2>&1
+ExecStart=/home/sampre_mw/mediawiki/run_web.sh
+ExecStop=/home/sampre_mw/mediawiki/kill_web.sh
 TimeoutStartSec=10min
 
 [Install]

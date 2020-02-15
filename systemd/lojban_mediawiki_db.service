@@ -7,8 +7,8 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=lojban_mw_db
 WorkingDirectory=/home/sampre_mw/mediawiki
-ExecStart=/bin/bash -x /home/sampre_mw/mediawiki/run_database.sh 2>&1
-ExecStop=/bin/bash -x /home/sampre_mw/mediawiki/kill_database.sh 2>&1
+ExecStart=/home/sampre_mw/mediawiki/run_database.sh
+ExecStop=/home/sampre_mw/mediawiki/kill_database.sh
 TimeoutStartSec=10min
 
 [Install]

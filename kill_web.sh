@@ -10,7 +10,7 @@ test=""
 # Test mode
 if [ "$1" = "-t" ]
 then
-	test="_test"
+	test="-test"
 fi
 
 $CONTAINER_BIN stop --time=30 lojban_mediawiki_web${test}
