@@ -1,77 +1,44 @@
-FROM kristophjunge/mediawiki:<%= mw_version %>
+FROM mediawiki:<%= mw_version %>
 
 RUN apt-get update
 RUN apt-get install -y wget
 
-# Convert the built-in uid/gid (999) to something that matches the external
+# Convert the built-in www-data user to something that matches the external
 # user running the container
 RUN find / -xdev -user www-data -print0 | xargs -0 chown <%= mw_userid %>
 RUN find / -xdev -group www-data -print0 | xargs -0 chgrp <%= mw_groupid %>
+
+# And same for the un-named user 1000 that seems to own a bunch of stuff
+RUN find / -xdev -user 1000 -print0 | xargs -0 chown <%= mw_userid %>
+RUN find / -xdev -group 1000 -print0 | xargs -0 chgrp <%= mw_groupid %>
+
+# Not sure if this'll work?, because our local userid is created by the podman --user argument
 RUN usermod -u <%= mw_userid %> www-data
 RUN groupmod -g <%= mw_groupid %> www-data
-
-RUN find / -xdev -user parsoid -print0 | xargs -0 chown <%= unused_userid %>
-RUN find / -xdev -group parsoid -print0 | xargs -0 chgrp <%= unused_groupid %>
-RUN usermod -u <%= unused_userid %> parsoid
-RUN groupmod -g <%= unused_groupid %> parsoid
 
 # Prep directorios for cross mounting
 RUN rm -rf /var/www/mediawiki/images /var/www/mediawiki/files
 RUN mkdir -p /var/www/mediawiki/images /var/www/mediawiki/files
 RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/www/mediawiki/images /var/www/mediawiki/files
 
-# Fix an explicit use of the bad userid
-RUN sed -i "s/999:999/<%= mw_userid %>:<%= mw_groupid %>/" /docker-entrypoint.sh
-
-# Add a run of the update script each time we start the system
-RUN sed -ri '5s;^;/script/update.sh\n;' /docker-entrypoint.sh
-
-# Show errors on the server logs
-RUN sed -ri 's;^php_admin_value.error_log. \s*=.*;php_admin_value[error_log] = /proc/self/fd/2;' /usr/local/etc/php-fpm.conf
-
-# Symlink a PNG that an extension keeps asking for
-RUN ln -s /var/www/mediawiki/resources/assets/wiki.png  /var/www/mediawiki/extensions/wiki.png
-
-# Disable parsoid, as we're not using it
-RUN sed -ri '/program:parsoid/,/^\s*$/d' /etc/supervisor/conf.d/supervisord.conf
-
-# Install Extensions
-WORKDIR /var/www/mediawiki/
-COPY grab_extdist.sh /usr/local/bin/
-RUN /usr/local/bin/grab_extdist.sh WikiArticleFeeds <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh MobileFrontend <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Variables <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Scribunto <%= mw_version %>
-RUN cd extensions/Scribunto ; find . -type f -name lua | xargs chmod 755
-RUN /usr/local/bin/grab_extdist.sh UploadLocal <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh RSS <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh SocialProfile <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Flow <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Echo <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Thanks <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh ReplaceText <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Widgets <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh ConfirmAccount <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh TweetANew <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh PdfExport <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Babel <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh cldr <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Translate <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector <%= mw_version %>
-RUN /usr/local/bin/grab_extdist.sh Quiz <%= mw_version %>
-RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
-RUN cd extensions ; wget https://github.com/jmnote/SimpleMathJax/archive/v0.7.1.tar.gz -O SimpleMathJax.tgz ; tar -xf SimpleMathJax.tgz ; ln -s SimpleMathJax-0.7.1 SimpleMathJax
-RUN cd extensions ; wget https://github.com/Alexia/DynamicPageList/archive/3.1.1.tar.gz -O DynamicPageList-3.1.1.tar.gz ; tar -xf DynamicPageList-3.1.1.tar.gz  ; ln -s DynamicPageList-3.1.1 DynamicPageList
-RUN cd extensions ; wget https://github.com/HydraWiki/mediawiki-embedvideo/archive/v2.7.1.zip -O EmbedVideo.zip ; unzip EmbedVideo.zip ; ln -s EmbedVideo.zip EmbedVideo
-
-# Install Skins
-RUN cd skins ; wget https://github.com/wikimedia/mediawiki-skins-Metrolook/archive/f2ec55b5929784d3aa9262c551db66777d33c32a.tar.gz -O Metrolook.tgz ; tar -xf Metrolook.tgz ; ln -s mediawiki-skins-Metrolook-f2ec55b5929784d3aa9262c551db66777d33c32a Metrolook
-RUN cd skins ; wget https://extdist.wmflabs.org/dist/skins/Vector-REL1_30-85a66bf.tar.gz -O Vector.tgz ; tar -xf Vector.tgz
-
-RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/run /var/lib/nginx /usr/local/etc /run /dev/stderr /dev/stdin  /dev/stdout /data /images
+# RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/run /var/lib/nginx /usr/local/etc /run /dev/stderr /dev/stdin  /dev/stdout /data /images
 RUN apt-get update
 RUN apt-get install sudo
 RUN echo 'www-data    ALL=(ALL)   NOPASSWD: ALL' >>/etc/sudoers
 RUN cat /etc/sudoers
 RUN apt-get -y install mariadb-client
 RUN apt-get -y install netcat
+
+RUN sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf
+
+RUN rm -rf /var/www/html/images
+RUN ln -s /var/www/mediawiki/images /var/www/html/images
+RUN ln -s /var/www/mediawiki/LocalSettings.php /var/www/html/LocalSettings.php
+RUN ln -s /var/www/mediawiki/files /var/www/html/files
+
+# Install Extensions
+WORKDIR /var/www/html/
+COPY grab_extdist.sh /usr/local/bin/
+RUN /usr/local/bin/grab_extdist.sh Variables <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh RSS <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh ConfirmAccount <%= mw_version %>
