@@ -30,10 +30,17 @@ $wgScriptExtension  = ".php";
 $wgArticlePath = "/papri/$1";
 //$wgArticlePath = "/wiki/$1";  # Virtual path. This directory MUST be different from the one used in $wgScriptPath
 
+# Allow CDNs to actually work by sending reasonable headers
+# See https://www.mediawiki.org/wiki/Manual:CloudFlare for some details
+$wgUseCdn = true;
+
 ## The protocol and server name to use in fully-qualified URLs
 <%- if test.length > 1 -%>
 $wgServer           = "http://mw-test.lojban.org";
 $wgCanonicalServer  = "http://mw-test.lojban.org";
+<%- elsif live.length > 1 -%>
+$wgServer           = "https://mw-live.lojban.org";
+$wgCanonicalServer  = "https://mw-live.lojban.org";
 <%- else -%>
 $wgServer           = "https://mw.lojban.org";
 $wgCanonicalServer  = "https://mw.lojban.org";

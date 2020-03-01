@@ -10,6 +10,7 @@
 # ARG_OPTIONAL_SINGLE([mw_version],[v],[mediawiki version, e.g. 1.34],[$DEFAULT_MW_VERSION])
 # ARG_OPTIONAL_SINGLE([iteration],[i],[number which is used to force rebuilds even if you haven't changed anything],[$DEFAULT_ITERATION])
 # ARG_OPTIONAL_BOOLEAN([test],[t],[Run in test mode (makes a separate instance that doesn't affect the running site at all).],[off])
+# ARG_OPTIONAL_BOOLEAN([live],[l],[Run in "live" mode, which simply causes the site to have mw-live.lojban.org as its URL; used to avoid cloudflare caching.],[off])
 # ARG_HELP([Runs the web container for the mediawiki])
 # ARGBASH_GO()
 # needed because of Argbash --> m4_ignore([
@@ -30,7 +31,7 @@ die()
 
 begins_with_short_option()
 {
-	local first_option all_short_options='vith'
+	local first_option all_short_options='vitlh'
 	first_option="${1:0:1}"
 	test "$all_short_options" = "${all_short_options/$first_option/}" && return 1 || return 0
 }
@@ -39,15 +40,17 @@ begins_with_short_option()
 _arg_mw_version="$DEFAULT_MW_VERSION"
 _arg_iteration="$DEFAULT_ITERATION"
 _arg_test="off"
+_arg_live="off"
 
 
 print_help()
 {
 	printf '%s\n' "Runs the web container for the mediawiki"
-	printf 'Usage: %s [-v|--mw_version <arg>] [-i|--iteration <arg>] [-t|--(no-)test] [-h|--help]\n' "$0"
+	printf 'Usage: %s [-v|--mw_version <arg>] [-i|--iteration <arg>] [-t|--(no-)test] [-l|--(no-)live] [-h|--help]\n' "$0"
 	printf '\t%s\n' "-v, --mw_version: mediawiki version, e.g. 1.34 (default: '$DEFAULT_MW_VERSION')"
 	printf '\t%s\n' "-i, --iteration: number which is used to force rebuilds even if you haven't changed anything (default: '$DEFAULT_ITERATION')"
 	printf '\t%s\n' "-t, --test, --no-test: Run in test mode (makes a separate instance that doesn't affect the running site at all). (off by default)"
+	printf '\t%s\n' "-l, --live, --no-live: Run in \"live\" mode, which simply causes the site to have mw-live.lojban.org as its URL; used to avoid cloudflare caching. (off by default)"
 	printf '\t%s\n' "-h, --help: Prints help"
 }
 
@@ -92,6 +95,18 @@ parse_commandline()
 					{ begins_with_short_option "$_next" && shift && set -- "-t" "-${_next}" "$@"; } || die "The short option '$_key' can't be decomposed to ${_key:0:2} and -${_key:2}, because ${_key:0:2} doesn't accept value and '-${_key:2:1}' doesn't correspond to a short option."
 				fi
 				;;
+			-l|--no-live|--live)
+				_arg_live="on"
+				test "${1:0:5}" = "--no-" && _arg_live="off"
+				;;
+			-l*)
+				_arg_live="on"
+				_next="${_key##-l}"
+				if test -n "$_next" -a "$_next" != "$_key"
+				then
+					{ begins_with_short_option "$_next" && shift && set -- "-l" "-${_next}" "$@"; } || die "The short option '$_key' can't be decomposed to ${_key:0:2} and -${_key:2}, because ${_key:0:2} doesn't accept value and '-${_key:2:1}' doesn't correspond to a short option."
+				fi
+				;;
 			-h|--help)
 				print_help
 				exit 0
@@ -123,7 +138,20 @@ set -x
 test=''
 if [ "$_arg_test" == 'on' ]
 then
-	test="-test"
+            test="-test"
+fi
+
+# Note that the live option is completely ignored here; it has no effect at docker build time
+live=''
+if [ "$_arg_live" == 'on' ]
+then
+            live="-live"
+fi
+
+if [ "$live" -a "$test" ]
+then
+    echo "Pick only one of live or test please."
+    exit 1
 fi
 
 CONTAINER_BIN=${CONTAINER_BIN:-$(which podman)}
