@@ -16,30 +16,10 @@ RUN find / -xdev -group 1000 -print0 | xargs -0 chgrp <%= mw_groupid %>
 RUN usermod -u <%= mw_userid %> www-data
 RUN groupmod -g <%= mw_groupid %> www-data
 
-# RUN find / -xdev -user parsoid -print0 | xargs -0 chown <%= unused_userid %>
-# RUN find / -xdev -group parsoid -print0 | xargs -0 chgrp <%= unused_groupid %>
-# RUN usermod -u <%= unused_userid %> parsoid
-# RUN groupmod -g <%= unused_groupid %> parsoid
-
 # Prep directorios for cross mounting
 RUN rm -rf /var/www/mediawiki/images /var/www/mediawiki/files
 RUN mkdir -p /var/www/mediawiki/images /var/www/mediawiki/files
 RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/www/mediawiki/images /var/www/mediawiki/files
-
-# # Fix an explicit use of the bad userid
-# RUN sed -i "s/999:999/<%= mw_userid %>:<%= mw_groupid %>/" /docker-entrypoint.sh
-
-# # Add a run of the update script each time we start the system
-# RUN sed -ri '5s;^;/script/update.sh\n;' /docker-entrypoint.sh
-
-# # Show errors on the server logs
-# RUN sed -ri 's;^php_admin_value.error_log. \s*=.*;php_admin_value[error_log] = /proc/self/fd/2;' /usr/local/etc/php-fpm.conf
-
-# # Symlink a PNG that an extension keeps asking for
-# RUN ln -s /var/www/mediawiki/resources/assets/wiki.png  /var/www/mediawiki/extensions/wiki.png
-
-# # Disable parsoid, as we're not using it
-# RUN sed -ri '/program:parsoid/,/^\s*$/d' /etc/supervisor/conf.d/supervisord.conf
 
 # RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/run /var/lib/nginx /usr/local/etc /run /dev/stderr /dev/stdin  /dev/stdout /data /images
 RUN apt-get update
@@ -66,19 +46,19 @@ RUN /usr/local/bin/grab_extdist.sh Variables <%= mw_version %>
 # RUN cd extensions/Scribunto ; find . -type f -name lua | xargs chmod 755
 # RUN /usr/local/bin/grab_extdist.sh UploadLocal <%= mw_version %>
 RUN /usr/local/bin/grab_extdist.sh RSS <%= mw_version %>
-# RUN /usr/local/bin/grab_extdist.sh SocialProfile <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh Flow <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh Echo <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh Thanks <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh ReplaceText <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh Widgets <%= mw_version %>
 RUN /usr/local/bin/grab_extdist.sh ConfirmAccount <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh SocialProfile <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh TweetANew <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh PdfExport <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh Babel <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh cldr <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh Translate <%= mw_version %>
-# RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector <%= mw_version %>
 # RUN /usr/local/bin/grab_extdist.sh Quiz <%= mw_version %>
 # RUN cd extensions ; git clone https://github.com/mathiasertl/CustomNavBlocks.git
 # RUN cd extensions ; wget https://github.com/jmnote/SimpleMathJax/archive/v0.7.1.tar.gz -O SimpleMathJax.tgz ; tar -xf SimpleMathJax.tgz ; ln -s SimpleMathJax-0.7.1 SimpleMathJax
