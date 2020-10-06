@@ -162,13 +162,13 @@ CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
 #************
 
 # Check for a non-privleged user
-UNUSED_USERID=998
+UNUSED_USERID=599
 if id $UNUSED_USERID >/dev/null 2>&1
 then
 	echo "userid $UNUSED_USERID is in use, but we need one that is not."
 	exit 1
 fi
-UNUSED_GROUPID=998
+UNUSED_GROUPID=599
 if id -g $UNUSED_GROUPID >/dev/null 2>&1
 then
 	echo "userid $UNUSED_GROUPID is in use, but we need one that is not."
