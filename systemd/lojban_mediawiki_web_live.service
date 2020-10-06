@@ -6,9 +6,9 @@ Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=lojban_mw_web_live
-WorkingDirectory=/home/sampre_mw/mediawiki
-ExecStart=/home/sampre_mw/mediawiki/run_web.sh -l
-ExecStop=/home/sampre_mw/mediawiki/kill_web.sh -l
+WorkingDirectory=/home/spmediawiki/mediawiki
+ExecStart=/home/spmediawiki/mediawiki/run_web.sh -l
+ExecStop=/home/spmediawiki/mediawiki/kill_web.sh -l
 TimeoutStartSec=10min
 
 [Install]
