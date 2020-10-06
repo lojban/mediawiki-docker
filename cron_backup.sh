@@ -7,9 +7,10 @@ set -x
 CONTAINER_BIN=${CONTAINER_BIN:-$(which podman)}
 CONTAINER_BIN=${CONTAINER_BIN:-$(which docker)}
 
-cd /home/sampre_mw/mediawiki
-rm -f data/mysql_backup.sh
-erb mysql_backup.sh.erb >data/mysql_backup.sh
-chmod --reference=mysql_backup.sh.erb data/mysql_backup.sh
-$CONTAINER_BIN cp data/mysql_backup.sh lojban_mediawiki_db:/tmp/
+cd /home/spmediawiki/mediawiki
+erb my.cnf.erb >data/my.cnf
+chmod --reference=my.cnf.erb data/my.cnf
+$CONTAINER_BIN cp data/my.cnf lojban_mediawiki_db:/tmp/
+$CONTAINER_BIN cp mysql_backup.sh lojban_mediawiki_db:/tmp/
 $CONTAINER_BIN exec -t lojban_mediawiki_db /tmp/mysql_backup.sh
+$CONTAINER_BIN cp /dev/null lojban_mediawiki_db:/tmp/my.cnf
