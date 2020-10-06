@@ -76,8 +76,8 @@ $wgEmailAuthentication = true;
 
 ## Database settings
 $wgDBtype           = "mysql";
-# See run_database.sh for why we're talking to jukni
-$wgDBserver         = "jukni:<%= test.length > 1 ? 11037 : 11036 %>";  # Not 'localhost'; that will try to do a socket connection, instead of TCP
+# See run_database.sh for why we're talking to lebna
+$wgDBserver         = "lebna:<%= test.length > 1 ? 11037 : 11036 %>";  # Not 'localhost'; that will try to do a socket connection, instead of TCP
 $wgDBname           = "mediawiki";
 $wgDBuser           = "root";
 $wgDBpassword       = "<%= File.read('DO_NOT_CHECK_IN/mysql_password.txt').chomp %>";
