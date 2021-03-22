@@ -30,6 +30,7 @@ RUN apt-get -y install mariadb-client
 RUN apt-get -y install netcat
 
 RUN sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf
+RUN sed -i 's/:80>/:8080>/' /etc/apache2/sites-available/000-default.conf
 
 RUN rm -rf /var/www/html/images
 RUN ln -s /var/www/mediawiki/images /var/www/html/images
