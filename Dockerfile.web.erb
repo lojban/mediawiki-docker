@@ -1,4 +1,4 @@
-FROM mediawiki:<%= mw_version %>
+FROM docker.io/library/mediawiki:<%= mw_version %>
 
 RUN apt-get update
 RUN apt-get install -y wget
