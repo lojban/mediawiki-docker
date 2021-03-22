@@ -11,3 +11,5 @@ RUN find / -xdev -user mysql -print0 | xargs -0 chown <%= db_userid %>
 RUN find / -xdev -group mysql -print0 | xargs -0 chgrp <%= db_groupid %>
 RUN usermod -u <%= db_userid %> mysql
 RUN groupmod -g <%= db_groupid %> mysql
+
+RUN sed -i 's/^innodb_buffer_pool_size\s*=\s*.*/innodb_buffer_pool_size = 4G/' /etc/mysql/my.cnf
