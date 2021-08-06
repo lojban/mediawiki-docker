@@ -1,7 +1,6 @@
 FROM docker.io/library/mediawiki:<%= mw_version %>
 
-RUN apt-get update
-RUN apt-get install -y wget
+RUN apt-get update && apt-get install -y wget sudo mariadb-client netcat vim
 
 # Convert the built-in www-data user to something that matches the external
 # user running the container
@@ -22,15 +21,8 @@ RUN mkdir -p /var/www/mediawiki/images /var/www/mediawiki/files
 RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/www/mediawiki/images /var/www/mediawiki/files
 
 # RUN chown -R <%= mw_userid %>:<%= mw_groupid %> /var/run /var/lib/nginx /usr/local/etc /run /dev/stderr /dev/stdin  /dev/stdout /data /images
-RUN apt-get update
-RUN apt-get install sudo
 RUN echo 'www-data    ALL=(ALL)   NOPASSWD: ALL' >>/etc/sudoers
 RUN cat /etc/sudoers
-RUN apt-get -y install mariadb-client
-RUN apt-get -y install netcat
-
-RUN sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf
-RUN sed -i 's/:80>/:8080>/' /etc/apache2/sites-available/000-default.conf
 
 RUN rm -rf /var/www/html/images
 RUN ln -s /var/www/mediawiki/images /var/www/html/images
@@ -45,3 +37,8 @@ RUN /usr/local/bin/grab_extdist.sh RSS <%= mw_version %>
 RUN /usr/local/bin/grab_extdist.sh ConfirmAccount <%= mw_version %>
 RUN /usr/local/bin/grab_extdist.sh SocialProfile <%= mw_version %>
 RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector <%= mw_version %>
+
+# Set up Apache configs
+RUN sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf
+RUN ln -s /etc/apache2/mods-available/remoteip.load /etc/apache2/mods-enabled/remoteip.load
+COPY httpd.conf /etc/apache2/sites-available/000-default.conf
