@@ -33,7 +33,7 @@ cd /srv/backups/mysqldumps
 ls -lrt
 
 # Delete old backups
-find . -type f | head -n -10 | xargs rm -f -v
+find . -type f | xargs ls -rt | head -n -10 | xargs rm -f -v
 
 for database in $(mysql --defaults-file=/tmp/my.cnf -N -B -e 'show databases;' | grep -v information_schema | grep -v performance_schema)
 do
