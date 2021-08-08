@@ -16,7 +16,9 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 ## Uncomment this to disable output compression
-# $wgDisableOutputCompression = true;
+# This is important right now; see
+# https://www.mediawiki.org/wiki/Topic:Vwp6kb2w63zpuvud
+$wgDisableOutputCompression = true;
 
 $wgSitename      = "Lojban";
 $wgMetaNamespace = "Lojban";
@@ -160,7 +162,7 @@ $wgCompressRevisions=true;//compress the database
 $wgMaxArticleSize=10000;//CLL and ELG are large texts. We need them on on a single page
 //require_once "$IP/extensions/NativeSvgHandler/NativeSvgHandler.php";
 //$wgParserCacheType = CACHE_NONE;
-$wgExternalLinkTarget = '_blank';//in order to open external links in a new window / tab.
+//$wgExternalLinkTarget = '_blank';//in order to open external links in a new window / tab.
 $wgDefaultUserOptions['watchdefault'] = 1;
 
 #GUI PAGE ELEMENTS
@@ -363,30 +365,12 @@ $wgFlowOccupyNamespaces = array( NS_USER_TALK );
 
 
 #Editor
-//require_once( "$IP/extensions/CharInsert/CharInsert.php" );
-## VisualEditor + Parsoid:
-# require_once("$IP/extensions/VisualEditor/VisualEditor.php");
-// By default, VE is only enabled in NS_MAIN
-# $wgVisualEditorNamespaces = array( NS_MAIN, NS_TALK, NS_USER, NS_USER_TALK, NS_IMAGE, NS_CATEGORY);
-// Enable by default for everybody
-# $wgDefaultUserOptions['visualeditor-enable'] = 1;
-// Don't allow users to disable it
-# $wgHiddenPrefs[] = 'visualeditor-enable';
-// OPTIONAL: Enable VisualEditor's experimental code features
-//$wgVisualEditorEnableExperimentalCode = true;
-// URL to the Parsoid instance
-// MUST NOT end in a slash due to Parsoid bug
-# $wgVisualEditorParsoidURL = 'http://localhost:9999';
-// Interwiki prefix to pass to the Parsoid instance
-// Parsoid will be called as $url/$prefix/$pagename
-# $wgVisualEditorParsoidPrefix = 'localhost';
-// List of skins VisualEditor integration supports
-# $wgVisualEditorSupportedSkins = array( 'vector', 'apex', 'monobook', 'minerva', 'metrolook' );
-// Whether to enable the (experimental for now) TOC widget
-# $wgVisualEditorEnableTocWidget = false;
-// Whether to show the "welcome to the beta" dialog the first time a user uses VisualEditor
-# $wgVisualEditorShowBetaWelcome = false;
+wfLoadExtension( 'VisualEditor' );
+wfLoadExtension( 'Parsoid', 'vendor/wikimedia/parsoid/extension.json' );
+$wgVisualEditorEnableWikitext = true;
+$wgDefaultUserOptions['visualeditor-newwikitext'] = 1;
 
+//require_once( "$IP/extensions/CharInsert/CharInsert.php" );
 
 #SEARCH
 //require_once( "$IP/extensions/OpenSearchXml/OpenSearchXml.php" );
@@ -456,22 +440,25 @@ $wgGroupPermissions['user']['create'] = true;
 $wgGroupPermissions['sysop']['create'] = true;
 
 ##confirm account:
-require_once "$IP/extensions/ConfirmAccount/ConfirmAccount.php";
-$wgGroupPermissions['user']['createaccount'] = true;
+#require_once "$IP/extensions/ConfirmAccount/ConfirmAccount.php";
+wfLoadExtension( 'ConfirmAccount' );
+#$wgGroupPermissions['sysop']['createaccount'] = false;
+$wgGroupPermissions['*']['createaccount'] = false;
+#$wgGroupPermissions['user']['createaccount'] = true;
 $wgConfirmAccountContact = 'thelogicallanguagegroup@gmail.com';
 $wgGroupPermissions['bureaucrat']['confirmaccount-notify'] = true;
 $wgMakeUserPageFromBio = false;
 $wgAutoWelcomeNewUsers = false;
-$wgConfirmAccountRequestFormItems = array(
-        'UserName'        => array( 'enabled' => true ),
-        'RealName'        => array( 'enabled' => false ),
-        'Biography'       => array( 'enabled' => false, 'minWords' => 3 ),
-        'AreasOfInterest' => array( 'enabled' => false ),
-        'CV'              => array( 'enabled' => false ),
-        'Notes'           => array( 'enabled' => true ),
-        'Links'           => array( 'enabled' => false ),
-        'TermsOfService'  => array( 'enabled' => false ),
-);
+$wgConfirmAccountRequestFormItems = [
+        'UserName'        => [ 'enabled' => true ],
+        'RealName'        => [ 'enabled' => false ],
+        'Biography'       => [ 'enabled' => false, 'minWords' => 3 ],
+        'AreasOfInterest' => [ 'enabled' => false ],
+        'CV'              => [ 'enabled' => false ],
+        'Notes'           => [ 'enabled' => true ],
+        'Links'           => [ 'enabled' => false ],
+        'TermsOfService'  => [ 'enabled' => false ],
+];
 
 ## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
 ## 
@@ -634,4 +621,4 @@ ini_set( 'display_errors', 1 );
 //require_once("$IP/extensions/SiteGraph/SiteGraph.php");
 
 $wgShowExceptionDetails = true;
-
+$wgDisableOutputCompression = true;
