@@ -97,3 +97,14 @@ of "web".
 
 For test instances, use the run scripts directly, and then the logs will simply be printed
 into your terminal.
+
+General Note On MW Web Configuration
+------------------------------------
+
+Much of the mediawiki config is in LocalSettings.php.erb ; in
+particular, it's very important to understand $wgScriptPath and
+$wgArticlePath and how they relate.  Normally the mw code (i.e.
+$wgScriptPath) is a *subdir* of the document root, although that's
+not what we're doing here.  See
+http://www.mediawiki.org/wiki/Manual:Short_URL and
+http://www.mediawiki.org/wiki/Manual:Short_URL/Apache
