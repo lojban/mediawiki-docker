@@ -30,7 +30,7 @@ fi
 mkdir -p /srv/backups/mysqldumps
 chmod 700 /srv/backups/mysqldumps
 cd /srv/backups/mysqldumps
-ls -l
+ls -lrt
 
 # Delete old backups
 find . -type f | head -n -10 | xargs rm -f -v
