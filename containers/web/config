@@ -1,0 +1,9 @@
+description="mediawiki's web container"
+after_containers=db
+needs_network=true
+name=web
+version=1
+run_args='-v $containerdir/misc/LocalSettings.php:/var/www/mediawiki/LocalSettings.php -v $containerdir/data/images:/var/www/mediawiki/images -v $containerdir/data/files:/var/www/mediawiki/files'
+mw_version=1.35
+files_to_erb_on_run=containers/$container/misc/LocalSettings.php
+run_program='bash -c "/var/www/html/maintenance/update.php --conf /var/www/mediawiki/LocalSettings.php --quick && /usr/local/bin/docker-php-entrypoint apache2-foreground"'

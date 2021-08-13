@@ -1,0 +1,43 @@
+FROM docker.io/library/mediawiki:<%= mw_version %>
+
+# Convert the built-in www-data user to something that matches the external
+# user running the container
+RUN find / -xdev -user www-data -print0 | xargs -0 chown <%= userid %>
+RUN find / -xdev -group www-data -print0 | xargs -0 chgrp <%= groupid %>
+
+# And same for the un-named user 1000 that seems to own a bunch of stuff
+RUN find / -xdev -user 1000 -print0 | xargs -0 chown <%= userid %>
+RUN find / -xdev -group 1000 -print0 | xargs -0 chgrp <%= groupid %>
+
+# Make the username match our id
+RUN usermod -u <%= userid %> www-data
+RUN groupmod -g <%= groupid %> www-data
+
+RUN apt-get update && apt-get install -y wget mariadb-client netcat vim
+
+# Prep directories for cross mounting
+RUN rm -rf /var/www/mediawiki/images /var/www/mediawiki/files
+RUN mkdir -p /var/www/mediawiki/images /var/www/mediawiki/files
+RUN chown -R <%= userid %>:<%= groupid %> /var/www/mediawiki/images /var/www/mediawiki/files
+
+
+RUN rm -rf /var/www/html/images
+RUN ln -s /var/www/mediawiki/images /var/www/html/images
+RUN ln -s /var/www/mediawiki/LocalSettings.php /var/www/html/LocalSettings.php
+RUN ln -s /var/www/mediawiki/files /var/www/html/files
+
+# Install Extensions
+WORKDIR /var/www/html/
+COPY misc/grab_extdist.sh /usr/local/bin/
+RUN /usr/local/bin/grab_extdist.sh Variables <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh RSS <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh ConfirmAccount <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh SocialProfile <%= mw_version %>
+RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector <%= mw_version %>
+
+# Set up Apache configs
+RUN ln -s /etc/apache2/mods-available/remoteip.load /etc/apache2/mods-enabled/remoteip.load
+COPY containers/<%= container %>/misc/httpd.conf /etc/apache2/sites-available/000-default.conf
+
+# Port 8081 for test domain
+RUN sed -i 's/Listen 80/Listen 8081/' /etc/apache2/ports.conf

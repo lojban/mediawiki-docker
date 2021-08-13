@@ -1,0 +1,2 @@
+service=mediawiki
+pod_args='-p 11080:8080 -p 11081:8081 -p 11082:8082'

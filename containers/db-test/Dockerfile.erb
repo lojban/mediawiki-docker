@@ -1,0 +1,33 @@
+<%= "\n"*30 %>
+<%= "# YOU ARE IN THE WRONG PLACE" %>
+<%= "# YOU ARE IN THE WRONG PLACE use the ERB file" %>
+<%= "# YOU ARE IN THE WRONG PLACE" %>
+
+FROM mariadb:10.4
+
+# Convert the built-in uid/gid (999) to something that matches the external
+# user running the container
+RUN usermod -u <%= userid %> mysql
+RUN find / -xdev -user 999 -print0 | xargs -0 chown mysql
+RUN find / -xdev -user 999 -ls
+RUN groupmod -g <%= groupid %> mysql
+RUN find / -xdev -group 999 -print0 | xargs -0 chgrp mysql
+RUN find / -xdev -group 999 -ls
+
+RUN sed -i 's/^innodb_buffer_pool_size\s*=\s*.*/innodb_buffer_pool_size = 4G/' /etc/mysql/my.cnf
+
+# Stop having to type the password all the time
+RUN mkdir /home/mysql
+COPY misc/my.cnf /home/mysql/.my.cnf
+RUN chmod 400 /home/mysql/.my.cnf
+RUN chown mysql:mysql /home/mysql/.my.cnf
+
+# Backup script
+COPY misc/mysql_backup.sh /usr/local/bin/mysql_backup.sh
+RUN chmod 700 /usr/local/bin/mysql_backup.sh
+RUN chown mysql:mysql /usr/local/bin/mysql_backup.sh
+
+# The only part that's specific to the test host:
+RUN sed -r -i 's/^(.*port.*) 3306\s*$/\1 3307/' /etc/mysql/my.cnf
+
+USER mysql

@@ -37,16 +37,8 @@ $wgArticlePath = "/papri/$1";
 $wgUseCdn = true;
 
 ## The protocol and server name to use in fully-qualified URLs
-<%- if test.length > 1 -%>
-$wgServer           = "http://mw-test.lojban.org";
-$wgCanonicalServer  = "http://mw-test.lojban.org";
-<%- elsif live.length > 1 -%>
-$wgServer           = "https://mw-live.lojban.org";
-$wgCanonicalServer  = "https://mw-live.lojban.org";
-<%- else -%>
-$wgServer           = "https://mw.lojban.org";
-$wgCanonicalServer  = "https://mw.lojban.org";
-<%- end -%>
+$wgServer           = "http://mw.lojban.org";
+$wgCanonicalServer  = "http://mw.lojban.org";
 
 ## The relative URL path to the skins directory
 $wgStylePath        = "$wgScriptPath/skins";
@@ -78,11 +70,10 @@ $wgEmailAuthentication = true;
 
 ## Database settings
 $wgDBtype           = "mysql";
-# See run_database.sh for why we're talking to lebna
-$wgDBserver         = "lebna:<%= test.length > 1 ? 11037 : 11036 %>";  # Not 'localhost'; that will try to do a socket connection, instead of TCP
+$wgDBserver         = "127.0.0.1:3306";  # Not 'localhost'; that will try to do a socket connection, instead of TCP
 $wgDBname           = "mediawiki";
 $wgDBuser           = "root";
-$wgDBpassword       = "<%= File.read('DO_NOT_CHECK_IN/mysql_password.txt').chomp %>";
+$wgDBpassword       = "<%= mysql_password %>";
 
 # MySQL specific settings
 $wgDBprefix         = "";
@@ -122,7 +113,7 @@ $wgShellLocale = "en_US.utf8";
 # Site language code, should be one of the list in ./languages/Names.php
 $wgLanguageCode = "en";
 
-$wgSecretKey = "<%= File.read('DO_NOT_CHECK_IN/wgsecret_password.txt').chomp %>";
+$wgSecretKey = "<%= wgsecret_password %>";
 
 # Site upgrade key. Must be set to a string (default provided) to turn on the
 # web installer while LocalSettings.php is in place
@@ -166,7 +157,7 @@ $wgMaxArticleSize=10000;//CLL and ELG are large texts. We need them on on a sing
 $wgDefaultUserOptions['watchdefault'] = 1;
 
 #GUI PAGE ELEMENTS
-$wgFavicon = "/extensions/LojbanFavicon.ico";
+$wgFavicon = "/images/5/50/LojbanFavicon.ico";
 
 // DISABLED PER https://github.com/lojban/lmw/issues/1
 // require_once( "$IP/extensions/LogoFunctions/LogoFunctions.php" );//you can change the logo
@@ -248,21 +239,6 @@ $wgPFEnableStringFunctions = true;
 wfLoadExtension( 'Variables' );
 wfLoadExtension( 'Scribunto' );
 $wgScribuntoDefaultEngine = 'luastandalone';
-
-## ## REMOVED FOR MW 1.34 UPGRADE 1 Feb 2020
-## 
-## wfLoadExtension( 'DynamicPageList' );
-## // require_once("$IP/extensions/SimpleTable/SimpleTable.php");//only version 1.2 (not later!!!) works
-## //enableSemantics('mw<%= test %>.lojban.org');
-## //include_once( "$IP/extensions/SemanticForms/SemanticForms.php" );
-## require_once "$IP/extensions/SimpleMathJax/SimpleMathJax.php";
-## #$wgSimpleMathJaxSize = 120;
-## /** There is a bug in Extension:MathJax with MediaWiki 1.19.0, 1.20.0 and 1.21.1
-## *   If you are using any form of PHP caching on your wiki and you have setup
-## *   your wiki to use variable caching like $wgMainCacheType = CACHE_ACCEL; 
-## *   you could encounter issues with rendering of formulas. 
-## *   If so uncomment the last line.
-## */
 
 # Robin's server alias
 ///combat alias mw.lojban.org that made you think you loggined from Robin's server

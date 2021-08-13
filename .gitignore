@@ -1,5 +1,29 @@
-# Contains secrets
-DO_NOT_CHECK_IN/
-# Contains user-generated and script-generated data; the former is potentially
-# private, the latter we can regenerate
-data/
+# Vim
+[._]*.sw[a-p]
+*~
+
+# helps ripgrep not be silly
+.git
+
+# Don't check in secrets
+secrets
+
+# Data files
+containers/db/data
+containers/db-test/data
+containers/web-test/data
+containers/web/data
+containers/web-live/data
+
+# ERB result files
+containers/db-test/Dockerfile
+containers/db/Dockerfile
+containers/web-live/Dockerfile
+containers/web-live/misc/LocalSettings.php
+containers/web-test/Dockerfile
+containers/web-test/misc/LocalSettings.php
+containers/web/Dockerfile
+containers/web/misc/LocalSettings.php
+cron/crontab
+misc/my.cnf
+misc/mysql_backup.sh

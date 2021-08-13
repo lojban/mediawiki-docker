@@ -1,0 +1,5 @@
+description="mediawiki's TEST db container"
+needs_network=true
+name=db-test
+version=1
+run_args='-v $containerdir/data/db:/var/lib/mysql -v $containerdir/data/backups:/srv/backups -e MYSQL_ROOT_PASSWORD=$mysql_password -e MYSQL_PASSWORD=$mysql_password'

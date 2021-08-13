@@ -1,102 +1,25 @@
 Lojban Mediawiki Server
 =======================
 
-This repo cotnains the code used to run the Lojban Mediawiki Server, which runs
-inside a pair of Docker/Podman containers.
+This is the containerized service infrastructure for the Lojban
+Mediawiki Server.
 
-This repo by itself won't get you a running system because it doesn't describe
-the database.  It's assumed that you're using this along with the data stored
-on the web server.
+This repo by itself won't get you a running system because it
+doesn't have the contents of the data/ directories.
+
+This is an LBCS instance (see https://github.com/lojban/lbcs/ ),
+which is why a bunch of things in here are symlinks off into
+apparently empty space; you have to have LBCS installed in
+/opt/lbcs/ for them to work.
+
+That's also where the docs on how to like start and stop the service
+and so on are.
 
 CHECK STUFF IN WHEN YOUR CHANGES ARE DONE!!!
 --------------------------------------------
 
 This repo should always have what we're using in production; if you change
 something, please check it in!
-
-How To Reach The Server
------------------------
-
-	$ ssh sampre_mw@jukni.lojban.org 
-
-Login is via ssh key, so if you think you should have access but that doesn't
-work, email webmaster@lojban.org or find rlpowell in #lojban on freenode irc.
-
-How To Restart The Server
--------------------------
-
-	$ systemctl --user restart lojban_mediawiki_web
-
-That restarts only the web container.  If the DB container is running OK (you can check
-with "systemctl --user status"), you should probably leave it alone, but if you really
-want to restart it:
-
-	$ systemctl --user restart lojban_mediawiki_db
-
-How To Test Changes
--------------------
-
-Make whatever changes you want, typically to Dockerfile.web or
-LocalSettings.php.in , and run:
-
-	$ ./run_database.sh -t
-
-And then, in another window, run:
-
-	$ run_web.sh -t
-
-This will copy all the data (including the database, so it takes a while) to
-the test instance space, and launch a pair of containers to run your changes.
-You can reach the test instance at http://test-mw.lojban.org/
-
-How To Install/Upgrade Plugins
-------------------------------
-
-All the plugin installation is done in Dockerfile.web (although sometimes
-associated changes to LocalSettings.php.in are required).  It should be pretty
-obvious what to do in there. Basically, you need to download and unpack the
-extension in such a way that the startup in LocalSettings works.  So if in
-LocalSettings you add:
-
-	require_once "$IP/extensions/Foo/Foo.php";
-
-then your installation had better have created a directory named Foo/ ,
-and not Foo-1.2/ or foo/
-
-How To Show What Should Be Running
-----------------------------------
-
-	$ systemctl --user list-unit-files | grep enabled
-	lojban_mediawiki_db.service  enabled
-	lojban_mediawiki_web.service enabled
-
-How To Show What Is Actually Running
-------------------------------------
-
-FIXME: do
-systemctl --user status
-
-How To Interact With The Instances Directly
--------------------------------------------
-
-	$ sudo docker/podman exec -it lojban_mediawiki_web bash
-
-This will give you a shell on the production web instance; modify as
-appropriate for other instances.
-
-(The system prefers podman if it's present; you can check what it actually ran
-as with "sudo podman ps" or "sudo docker ps".)
-
-How To See Instance Logs
-------------------------
-
-	$ journalctl -f -t lojban_mw_web
-
-This will give you the logs on the production web instance; the database is "db" instead
-of "web".
-
-For test instances, use the run scripts directly, and then the logs will simply be printed
-into your terminal.
 
 General Note On MW Web Configuration
 ------------------------------------
@@ -108,3 +31,77 @@ $wgScriptPath) is a *subdir* of the document root, although that's
 not what we're doing here.  See
 http://www.mediawiki.org/wiki/Manual:Short_URL and
 http://www.mediawiki.org/wiki/Manual:Short_URL/Apache
+
+How To Install/Upgrade Plugins
+------------------------------
+
+All the plugin installation is done in
+containers/web\*/Dockerfile.web (although sometimes associated
+changes to containers/web\*/misc/LocalSettings.php.erb  are
+required).  It should be pretty obvious what to do in there.
+Basically, you need to download and unpack the extension in such a
+way that the startup in LocalSettings works.  So if in LocalSettings
+you add:
+
+	require_once "$IP/extensions/Foo/Foo.php";
+
+then your installation had better have created a directory named Foo/ ,
+and not Foo-1.2/ or foo/
+
+How To Test Changes
+-------------------
+
+There are db-test and web-test containers.  Typically you'd be
+testing changes to containers/web-test/Dockerfile.erb or
+containers/web-test/misc/LocalSettings.php.erb .  Make your changes
+and do something like this:
+
+        $ systemctl --user restart db-test web-test ; journalctl --user -f -n 50 
+
+How To Check The Test Configurations
+------------------------------------
+
+You can check for differences between the prod and test
+configurations like so:
+
+        $ ./diff_test.sh web
+        $ ./diff_test.sh db
+
+Some things are expected, such as the web server being on port 8080,
+or the host name being mw-test, or the db server being on port 3307.
+You're looking for any changes you *didn't* intend; the goal is to
+change only the configs you intended and control config drift.
+
+Refreshing Test Data
+--------------------
+
+To get the latest data into the test containers, run:
+
+        $ ./sync_test.sh web
+        $ ./sync_test.sh db
+
+If you want the db one to work properly, though, you need to stop
+the normal db container.
+
+General System Status Check
+---------------------------
+
+	$ systemctl --user list-units --no-page -t service -a
+
+How To Interact With The Instances Directly
+-------------------------------------------
+
+	$ podman exec -it web bash
+
+This will give you a shell on the production web instance; modify as
+appropriate for other instances.
+
+How To See Instance Logs
+------------------------
+
+	$ journalctl --user -n 50 -f
+
+This will give you the logs on all instances; to get just the
+production web instance use:
+
+	$ journalctl --user -n 50 -f -u web
