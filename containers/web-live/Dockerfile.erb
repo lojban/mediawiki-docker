@@ -38,6 +38,8 @@ RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector <%= mw_version %>
 # Set up Apache configs
 RUN ln -s /etc/apache2/mods-available/remoteip.load /etc/apache2/mods-enabled/remoteip.load
 RUN ln -s /etc/apache2/mods-available/proxy_html.load /etc/apache2/mods-enabled/proxy_html.load
+RUN ln -s /etc/apache2/mods-available/proxy_http.load /etc/apache2/mods-enabled/proxy_http.load
+RUN ln -s /etc/apache2/mods-available/proxy_http2.load /etc/apache2/mods-enabled/proxy_http2.load
 RUN ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/proxy.load
 COPY containers/<%= container %>/misc/httpd.conf /etc/apache2/sites-available/000-default.conf
 
