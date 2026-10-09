@@ -121,7 +121,8 @@ $wgUpgradeKey = false;
 
 ## Default skin: you can change the default skin. Use the internal symbolic
 ## names, ie 'standard', 'nostalgia', 'cologneblue', 'monobook', 'vector':
-$wgDefaultSkin = "vector";
+wfLoadSkin( 'Timeless' );
+$wgDefaultSkin = "Timeless";
 
 ## For attaching licensing metadata to pages, and displaying an
 ## appropriate copyright notice / icon. GNU Free Documentation
@@ -267,13 +268,14 @@ $wgMaxShellMemory = 1048576;
 # allow more file types:
 # trying to get pdfs to work
 ## $wgMimeDetectorCommand = "file -bi"; 
-ini_set( 'memory_limit', '364M' );
+ini_set( 'memory_limit', '2048M' );
 $wgUploadSizeWarning = true;
 $wgAllowCopyUploads = true; //////	EXTREMELY IMPORTNAT FOR UTL UPLOADING
 $wgVerifyMimeType = false;
 $wgCheckFileExtensions = false;
 $wgStrictFileExtensions = false; // lets allow all extensions
-$wgFileExtensions[] = array( 'webp','sip', 'png', 'gif', 'jpg', 'jpeg', 'bmp', 'svg','pdf','djvu','djv','doc','mp3','swf','chm','diff','docx', 'ttf' );
+$wgFileExtensions = array( 'webp','sip', 'png', 'gif', 'jpg', 'jpeg', 'bmp', 'svg','pdf','djvu','djv','doc','mp3','swf','chm','diff','docx', 'ttf' );
+$wgProhibitedFileExtensions = array();
 $wgFileBlacklist = array();
 $wgMimeTypeBlacklist= array();
 $wgDisableUploadScriptChecks = true;
@@ -589,12 +591,43 @@ error_reporting( -1 );
 ini_set( 'display_errors', 1 );
 */
 
+# This should show PHP errors but only in logs
+ini_set('display_errors', 'Off');
+error_reporting(E_ALL);
+
+# hopefully errors to the logs?
+$wgShowExceptionDetails = true;
+$wgDebugLogGroups['error'] = '/dev/stderr';
+$wgDebugLogGroups['fatal'] = '/dev/stderr';
+$wgDebugLogGroups['exception'] = '/dev/stderr';
+$wgDebugLogGroups['DBError'] = '/dev/stderr';
+
 # EmbedVideo
 #old version: require_once( "$IP/extensions/EmbedVideo/EmbedVideo.php" ); 
 #disabled due to too much client side BS: wfLoadExtension( 'EmbedVideo' );
 
 # Math
 wfLoadExtension( 'Math' );
+
+# Captcha for account creation
+wfLoadExtensions([ 'ConfirmEdit', 'ConfirmEdit/QuestyCaptcha' ]);
+$wgCaptchaQuestions = [
+    'How to say Hello in Lojban?' => 'coi'
+];
+
+$wgMainCacheType    = CACHE_ANYTHING;
+$wgCaptchaTriggers['edit']          = false;
+$wgCaptchaTriggers['create']        = false;
+$wgCaptchaTriggers['createtalk']    = false;
+$wgCaptchaTriggers['addurl']        = false;
+$wgCaptchaTriggers['createaccount'] = true;
+$wgCaptchaTriggers['badlogin']      = true;
+
+$wgGroupPermissions['*'            ]['skipcaptcha'] = false;
+$wgGroupPermissions['user'         ]['skipcaptcha'] = true;
+$wgGroupPermissions['autoconfirmed']['skipcaptcha'] = true;
+$wgGroupPermissions['bot'          ]['skipcaptcha'] = true; // registered bots
+$wgGroupPermissions['sysop'        ]['skipcaptcha'] = true;
 
 # NON SORTED, disabled
 //require_once( "$IP/extensions/FileSystemListing/FileSystemListing.php" );
