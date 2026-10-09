@@ -22,6 +22,9 @@ COPY misc/my.cnf /home/mysql/.my.cnf
 RUN chmod 400 /home/mysql/.my.cnf
 RUN chown mysql:mysql /home/mysql/.my.cnf
 
+# Also fix max_connections and such
+COPY misc/my.cnf /etc/mysql/mariadb.conf.d/00-local.cnf 
+
 # Backup script
 COPY misc/mysql_backup.sh /usr/local/bin/mysql_backup.sh
 RUN chmod 700 /usr/local/bin/mysql_backup.sh

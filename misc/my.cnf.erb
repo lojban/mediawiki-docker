@@ -1,3 +1,12 @@
 [client]
 user=root
 password=<%= mysql_password %>
+
+[mysqld]
+key_buffer_size = 256M
+skip-log-error
+log_output = NONE
+log_warnings = 3
+max_allowed_packet = 32M
+table_open_cache = 256
+max_connections = 1024
