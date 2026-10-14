@@ -18,7 +18,7 @@ RUN find / -xdev -user 1000 -print0 | xargs -r -0 chown <%= userid %>:<%= groupi
 RUN usermod -u <%= userid %> www-data
 RUN groupmod -g <%= groupid %> www-data
 
-RUN apt-get update && apt-get install -y wget mariadb-client netcat vim
+RUN apt-get update && apt-get install -y wget mariadb-client netcat-openbsd vim
 
 # Prep directories for cross mounting
 RUN rm -rf /var/www/mediawiki/images /var/www/mediawiki/files
@@ -39,6 +39,8 @@ RUN /usr/local/bin/grab_extdist.sh RSS <%= mw_version %>
 RUN /usr/local/bin/grab_extdist.sh ConfirmAccount <%= mw_version %>
 RUN /usr/local/bin/grab_extdist.sh SocialProfile <%= mw_version %>
 RUN /usr/local/bin/grab_extdist.sh UniversalLanguageSelector <%= mw_version %>
+# https://www.mediawiki.org/wiki/Extension:CrawlerProtection -- bot crawling preventer
+RUN cd extensions/ ; wget https://github.com/mywikis/CrawlerProtection/archive/main.tar.gz -O CrawlerProtection.tar.gz ; tar -xzvf CrawlerProtection.tar.gz ; mv CrawlerProtection-main CrawlerProtection
 
 # Set up Apache configs
 RUN ln -s /etc/apache2/mods-available/remoteip.load /etc/apache2/mods-enabled/remoteip.load
@@ -48,12 +50,5 @@ RUN ln -s /etc/apache2/mods-available/proxy_http2.load /etc/apache2/mods-enabled
 RUN ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/proxy.load
 COPY containers/<%= container %>/misc/httpd.conf /etc/apache2/sites-available/000-default.conf
 
-# FIXME: move or fix
-RUN chown -h <%= userid %>:<%= groupid %> /var/www/html/LocalSettings.php
-
 # Port 8080 for main site
 RUN sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf
-
-# HORRIBLE HACK because https://phabricator.wikimedia.org/T168783 ;
-# turn off as soon as 1.40 is released!
-RUN cd /var/www/html/extensions/ConfirmAccount ; curl -s 'https://gerrit.wikimedia.org/r/changes/mediawiki%2Fextensions%2FConfirmAccount~831136/revisions/2/archive?format=tgz' | tar -zxvf -

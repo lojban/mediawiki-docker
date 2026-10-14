@@ -641,3 +641,6 @@ $wgGroupPermissions['sysop'        ]['skipcaptcha'] = true;
 
 $wgShowExceptionDetails = true;
 $wgDisableOutputCompression = true;
+
+# Bot/AI/LLM crawl protection; https://www.mediawiki.org/wiki/Extension:CrawlerProtection
+wfLoadExtension( 'CrawlerProtection' );
